@@ -12,7 +12,11 @@
 @protocol PCMEncoderToAACDelegate
 -(void)encodeCompleteBuffer:(uint8_t*)buffer withLenth:(long)totalLenth;
 @end
-@interface PCMEncoderToAAC : NSObject
+@interface AACEncoderFromPCM : NSObject
+@property(nonatomic,assign)Float64 outSampleRate;  //采样率
+@property(nonatomic,assign)UInt32 outChannelsPerFrame;
+@property(nonatomic,assign,readonly)UInt32 outFramesPerPacket;
+
 -(void)encodeWithBufferWithBuffer:(CMSampleBufferRef)buffer;
 
 @end

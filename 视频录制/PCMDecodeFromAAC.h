@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <CoreMedia/CoreMedia.h>
 
-@protocol H264DecoderDelegate
+@protocol GJH264DecoderDelegate
 -(void)decodeCompleteImageData:(CMSampleBufferRef)imageBuffer;
 @end
 @interface PCMDecodeFromAAC : NSObject

@@ -11,18 +11,22 @@
 #import <AVFoundation/AVFoundation.h>
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <VideoToolbox/VideoToolbox.h>
-#import "H264Decoder.h"
-#import "H264Encoder.h"
+#import "GJH264Decoder.h"
+#import "GJH264Encoder.h"
+#import "MCAudioOutputQueue.h"
 #define fps 10
 typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
 
-@interface ViewController ()<AVCaptureFileOutputRecordingDelegate,AVCaptureVideoDataOutputSampleBufferDelegate,H264DecoderDelegate,H264EncoderDelegate>//视频文件输出代理
+@interface ViewController ()<AVCaptureFileOutputRecordingDelegate,AVCaptureVideoDataOutputSampleBufferDelegate,AVCaptureAudioDataOutputSampleBufferDelegate,GJH264DecoderDelegate,GJH264EncoderDelegate>//视频文件输出代理
 {
     long frameCount;///每一重计，计算帧率
     long totalCount;////总共多少帧
     long totalSize;////总共传输大小
     
+    long _audioOffset;//音频偏移
+    
     NSTimer* _timer;
+    MCAudioOutputQueue* _audioOutputQueue;
 
 }
 @property (strong,nonatomic) AVCaptureSession *captureSession;//负责输入和输出设备之间的数据传递
@@ -31,6 +35,17 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
 @property (strong,nonatomic) AVCaptureDeviceInput *captureDeviceInput;//负责从AVCaptureDevice获得输入数据
 @property (strong,nonatomic) AVCaptureMovieFileOutput *captureMovieFileOutput;//视频输出流
 @property (strong,nonatomic) AVCaptureVideoDataOutput *captureDataOutput;//视频输出流
+@property (strong,nonatomic) AVCaptureAudioDataOutput *captureAudioOutput;//音频输出流
+
+@property (strong,nonatomic) AVCaptureConnection *videoConnect;//视频链接
+@property (strong,nonatomic) AVCaptureConnection *audioConnect;//音频链接
+
+@property (strong,nonatomic) dispatch_queue_t audioQueue;//音频线程
+@property (strong,nonatomic) dispatch_queue_t videoQueue;//视频线程
+@property (strong,nonatomic) dispatch_queue_t dealDataQueue;//处理数据线程
+
+
+
 
 
 @property (strong,nonatomic) AVCaptureVideoPreviewLayer *captureVideoPreviewLayer;//相机拍摄预览图层
@@ -48,8 +63,8 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
 @property (weak, nonatomic) IBOutlet UILabel *fpsLab;
 @property (weak, nonatomic) IBOutlet UILabel *ptsLab;
 
-@property(nonatomic)H264Decoder* decoder;
-@property(nonatomic)H264Encoder* encoder;
+@property(nonatomic)GJH264Decoder* decoder;
+@property(nonatomic)GJH264Encoder* encoder;
 
 @property(nonatomic)BOOL isFileStore;//是否文件存储；
 
@@ -75,6 +90,9 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.openALPlayer = [[HYOpenALHelper alloc]init];
+    [self.openALPlayer initOpenAL];
+ 
 #if 0
     openGLLayer = [[AAPLEAGLLayer alloc]init];
     [self.playView.layer addSublayer:openGLLayer];
@@ -83,9 +101,9 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
 #endif
     _isFileStore = NO;
     if (!_isFileStore) {
-        _encoder = [[H264Encoder alloc]init];
+        _encoder = [[GJH264Encoder alloc]init];
         _encoder.deleagte = self;
-        _decoder = [[H264Decoder alloc]init];
+        _decoder = [[GJH264Decoder alloc]init];
         _decoder.delegate = self;
         _timer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(timeFire:) userInfo:nil repeats:YES];
     }
@@ -123,6 +141,10 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
         NSLog(@"取得设备输入对象时出错，错误原因：%@",error.localizedDescription);
         return;
     }
+    _captureAudioOutput = [[AVCaptureAudioDataOutput alloc]init];
+    if ([_captureSession canAddOutput:_captureAudioOutput]) {
+        [_captureSession addOutput:_captureAudioOutput];
+    }
     //初始化设备输出对象，用于获得输出数据
     if(_isFileStore){
         _captureMovieFileOutput = [[AVCaptureMovieFileOutput alloc]init];
@@ -146,6 +168,8 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
         [_captureSession addInput:_audioCaptureDeviceInput];
     }
     
+    _videoConnect = [_captureDataOutput connectionWithMediaType:AVMediaTypeVideo];
+    _audioConnect = [_captureAudioOutput connectionWithMediaType:AVMediaTypeAudio];
     //创建视频预览层，用于实时展示摄像头状态
     _captureVideoPreviewLayer=[[AVCaptureVideoPreviewLayer alloc]initWithSession:self.captureSession];
     
@@ -174,9 +198,15 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
     }
     _enableRotation = YES;
     
+    _audioQueue = dispatch_queue_create("audio", DISPATCH_QUEUE_CONCURRENT);
+    _videoQueue = dispatch_queue_create("video", DISPATCH_QUEUE_CONCURRENT);
+    _dealDataQueue = dispatch_queue_create("dealData", DISPATCH_QUEUE_CONCURRENT);
+    
 
    
 }
+
+//[weakSelf.openALPlayer insertPCMDataToQueue:(unsigned char *)buf size:(UInt32)size samplerate:(int)bufinfo.samples_per_sec bitPerFrame:bufinfo.bits_per_sample channels:bufinfo.channels];
 
 -(void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
@@ -249,8 +279,8 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
     }else{
         if ([sender.titleLabel.text isEqualToString:@"开始录制"]) {
 //            self.captureDataOutput.videoSettings = @{(id)kCVPixelBufferPixelFormatTypeKey:@(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange)};
-            [self.captureDataOutput setSampleBufferDelegate:self queue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)];
-            
+            [self.captureDataOutput setSampleBufferDelegate:self queue:_videoQueue];
+            [self.captureAudioOutput setSampleBufferDelegate:self queue:_audioQueue];
             [sender setTitle:@"停止录制" forState:UIControlStateNormal];
         }else{
             [self.captureDataOutput setSampleBufferDelegate:nil queue:NULL];
@@ -359,11 +389,60 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
 bool i = false;
 
 -(void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
-    frameCount++;
-    AudioStreamPacketDescription* des;
-//    CMSampleBufferGetAudioStreamPacketDescriptions(sampleBuffer, <#size_t packetDescriptionsSize#>, <#AudioStreamPacketDescription * _Nullable packetDescriptionsOut#>, <#size_t * _Nullable packetDescriptionsSizeNeededOut#>)
-    [_encoder encodeSampleBuffer:sampleBuffer];
+  
+    
+    if (connection == self.videoConnect) {
+        
+        [_encoder encodeSampleBuffer:sampleBuffer];
+        frameCount++;
+        NSLog(@"video");
+    }else if(connection == self.audioConnect){
+        NSLog(@"audio");
+       
+            
+      
+        if (_audioOutputQueue == nil) {
+            CMFormatDescriptionRef formatDescription = CMSampleBufferGetFormatDescription(sampleBuffer);
+            const AudioStreamBasicDescription* baseDesc = CMAudioFormatDescriptionGetStreamBasicDescription(formatDescription);
+            size_t cookieSize = 0;
+            const void* cookie = CMAudioFormatDescriptionGetMagicCookie(formatDescription, &cookieSize);
+            NSData* cookieData = [NSData dataWithBytes:cookie length:cookieSize];
+            _audioOutputQueue = [[MCAudioOutputQueue alloc]initWithFormat:*baseDesc bufferSize:2000 macgicCookie:cookieData];
+        }
+        
+        size_t  bufferListSize;
+        AudioBufferList bufferList ;
+        CMBlockBufferRef blockBuffer;
+        OSStatus status = CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer(sampleBuffer, &bufferListSize, &bufferList, sizeof(AudioBufferList), NULL, NULL, 0, &blockBuffer);
+         if (status != noErr) {
+             NSLog(@"status:%d",status);
+             return ;
+         }
+        NSMutableData* data = [NSMutableData data];
+        AudioStreamPacketDescription* packetDesc = malloc(sizeof(AudioStreamPacketDescription)*bufferList.mNumberBuffers);
+        for (int i = 0; i < bufferList.mNumberBuffers; i++) {
+            [data appendBytes:bufferList.mBuffers[i].mData length:bufferList.mBuffers[i].mDataByteSize];
+            packetDesc[i].mDataByteSize =bufferList.mBuffers[i].mDataByteSize;
+            packetDesc[i].mStartOffset = _audioOffset;
+            _audioOffset += packetDesc[i].mDataByteSize;
 
+        }
+        
+        [_audioOutputQueue playData:data packetCount:bufferList.mNumberBuffers packetDescriptions:packetDesc isEof:NO];
+        CFRelease(blockBuffer);
+        free(packetDesc);
+        
+//        size_t packetSize;
+//        OSStatus status = CMSampleBufferGetAudioStreamPacketDescriptions(sampleBuffer, sizeof(AudioStreamBasicDescription), des, &packetSize);
+//        if (status != noErr) {
+//            NSLog(@"error");
+//        }
+//        int j = 0;
+//        j++;
+        
+
+    }
+    
 }
 
 

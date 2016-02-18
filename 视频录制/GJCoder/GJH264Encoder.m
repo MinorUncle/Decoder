@@ -1,13 +1,13 @@
 //
-//  H264Encoder.m
+//  GJH264Encoder.m
 //  视频录制
 //
 //  Created by tongguan on 15/12/28.
 //  Copyright © 2015年 未成年大叔. All rights reserved.
 //
 
-#import "H264Encoder.h"
-@interface H264Encoder()
+#import "GJH264Encoder.h"
+@interface GJH264Encoder()
 {
     long encoderFrameCount;
 
@@ -15,10 +15,10 @@
 @property(nonatomic)VTCompressionSessionRef enCodeSession;
 @end
 
-@implementation H264Encoder
+@implementation GJH264Encoder
 int _keyInterval;////key内的p帧数量
 
-H264Encoder* encoder ;
+GJH264Encoder* encoder ;
 - (instancetype)init
 {
     self = [super init];
@@ -72,7 +72,7 @@ H264Encoder* encoder ;
     NSLog(@"VTCompressionSessionCreate status:%d",(int)t);
     VTSessionSetProperty(_enCodeSession, kVTCompressionPropertyKey_RealTime, kCFBooleanTrue);
     VTSessionSetProperty(_enCodeSession, kVTCompressionPropertyKey_AllowFrameReordering, kCFBooleanFalse);
-    VTSessionSetProperty(_enCodeSession, kVTCompressionPropertyKey_ProfileLevel, kVTProfileLevel_H264_Baseline_AutoLevel);
+    VTSessionSetProperty(_enCodeSession, kVTCompressionPropertyKey_ProfileLevel, kVTProfileLevel_H264_High_AutoLevel);
     VTSessionSetProperty(_enCodeSession, kVTCompressionPropertyKey_H264EntropyMode, kVTH264EntropyMode_CABAC);
 
     
@@ -133,7 +133,10 @@ void encodeOutputCallback(void *  outputCallbackRefCon,void *  sourceFrameRefCon
                 memcpy(&data[4], sparameterSet, sparameterSetSize);
                 memcpy(&data[4+sparameterSetSize], "\x00\x00\x00\x01", 4);
                 memcpy(&data[8+sparameterSetSize], pparameterSet, pparameterSetSize);
-                [encoder.deleagte encodeCompleteBuffer:data withLenth:pparameterSetSize+sparameterSetSize+8];
+                
+                if ([encoder.deleagte respondsToSelector:@selector(encodeCompleteBuffer:withLenth:)]) {
+                    [encoder.deleagte encodeCompleteBuffer:data withLenth:pparameterSetSize+sparameterSetSize+8];
+                }
                 free(data);
             }
         }
@@ -142,14 +145,14 @@ void encodeOutputCallback(void *  outputCallbackRefCon,void *  sourceFrameRefCon
     CMBlockBufferRef dataBuffer = CMSampleBufferGetDataBuffer(sample);
     size_t length, totalLength;
     uint8_t *dataPointer;
-    OSStatus statusCodeRet = CMBlockBufferGetDataPointer(dataBuffer, 0, &length, &totalLength, &dataPointer);
+    OSStatus statusCodeRet = CMBlockBufferGetDataPointer(dataBuffer, 0, &length, &totalLength, (char**)&dataPointer);
     
 
     if (statusCodeRet == noErr) {
         
         uint32_t bufferOffset = 0;
         static const uint32_t AVCCHeaderLength = 4;
-        while (bufferOffset < totalLength - AVCCHeaderLength) {
+        while (bufferOffset < totalLength) {
             
             _keyInterval++;
             // Read the NAL unit length
@@ -158,9 +161,9 @@ void encodeOutputCallback(void *  outputCallbackRefCon,void *  sourceFrameRefCon
             
             NALUnitLength = CFSwapInt32BigToHost(NALUnitLength);
             uint8_t* data = dataPointer + bufferOffset;
-            memcpy(&data[0], "\x00\x00\x00\x01", 4);
+            memcpy(&data[0], "\x00\x00\x00\x01", AVCCHeaderLength);
         
-            [encoder.deleagte encodeCompleteBuffer:data withLenth:NALUnitLength + 4];
+            [encoder.deleagte encodeCompleteBuffer:data withLenth:NALUnitLength +AVCCHeaderLength];
             
             bufferOffset += AVCCHeaderLength + NALUnitLength;
         }

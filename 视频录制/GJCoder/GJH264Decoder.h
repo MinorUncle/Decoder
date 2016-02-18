@@ -1,5 +1,5 @@
 //
-//  H264Decoder.h
+//  GJH264Decoder.h
 //  视频录制
 //
 //  Created by tongguan on 15/12/28.
@@ -8,12 +8,12 @@
 
 #import <Foundation/Foundation.h>
 #import <VideoToolbox/VideoToolbox.h>
-@protocol H264DecoderDelegate
+@protocol GJH264DecoderDelegate <NSObject>
 -(void)decodeCompleteImageData:(CVImageBufferRef)imageBuffer;
 @end
 
-@interface H264Decoder : NSObject
-@property(nonatomic,weak)id<H264DecoderDelegate> delegate;
+@interface GJH264Decoder : NSObject
+@property(nonatomic,weak)id<GJH264DecoderDelegate> delegate;
 -(void)decodeBuffer:(uint8_t*)buffer withLenth:(uint32_t)totalLenth;
 
 @end

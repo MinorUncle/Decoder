@@ -1,12 +1,12 @@
 //
-//  H264Decoder.m
+//  GJH264Decoder.m
 //  视频录制
 //
 //  Created by tongguan on 15/12/28.
 //  Copyright © 2015年 未成年大叔. All rights reserved.
 //
 
-#import "H264Decoder.h"
+#import "GJH264Decoder.h"
 #define maxCount 10
 //////会覆盖队列
 @interface queue : NSObject 
@@ -42,7 +42,7 @@
 
 @end
 
-@interface H264Decoder()
+@interface GJH264Decoder()
 {
     dispatch_queue_t _decodeQueue;
     
@@ -51,8 +51,8 @@
 @property (nonatomic, assign) CMVideoFormatDescriptionRef formatDesc;
 
 @end
-@implementation H264Decoder
-H264Decoder *decoder;
+@implementation GJH264Decoder
+GJH264Decoder *decoder;
 uint8_t *pps = NULL;
 uint8_t *sps = NULL;
 
@@ -105,7 +105,9 @@ void decodeOutputCallback(
         return;
     }
     
-    [decoder.delegate decodeCompleteImageData:imageBuffer];
+    if ([decoder.delegate respondsToSelector:@selector(decodeCompleteImageData:)]) {
+        [decoder.delegate decodeCompleteImageData:imageBuffer];
+    }
 }
 
 

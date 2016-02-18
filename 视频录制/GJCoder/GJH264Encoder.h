@@ -1,5 +1,5 @@
 //
-//  H264Encoder.h
+//  GJH264Encoder.h
 //  视频录制
 //
 //  Created by tongguan on 15/12/28.
@@ -8,15 +8,15 @@
 
 #import <Foundation/Foundation.h>
 #import <VideoToolbox/VideoToolbox.h>
-@protocol H264EncoderDelegate
+@protocol GJH264EncoderDelegate <NSObject>
 -(void)encodeCompleteBuffer:(uint8_t*)buffer withLenth:(long)totalLenth;
 @end
 
 
 
 
-@interface H264Encoder : NSObject
-@property(nonatomic,weak)id<H264EncoderDelegate> deleagte;
+@interface GJH264Encoder : NSObject
+@property(nonatomic,weak)id<GJH264EncoderDelegate> deleagte;
 -(void)encodeSampleBuffer:(CMSampleBufferRef)sampleBuffer;
 -(void)stop;
 @end

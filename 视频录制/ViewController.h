@@ -7,9 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "HYOpenALHelper.h"
 
 @interface ViewController : UIViewController
 
+@property(nonatomic)HYOpenALHelper * openALPlayer;//语音播放。
 
 @end
 
