@@ -9,13 +9,14 @@
 #import <Foundation/Foundation.h>
 #import <AudioToolbox/AudioToolbox.h>
 #import <CoreMedia/CoreMedia.h>
-@protocol PCMEncoderToAACDelegate
--(void)encodeCompleteBuffer:(uint8_t*)buffer withLenth:(long)totalLenth;
+@protocol AACEncoderFromPCMDelegate<NSObject>
+-(void)aacEncodeCompleteBuffer:(uint8_t*)buffer withLenth:(long)totalLenth;
 @end
 @interface AACEncoderFromPCM : NSObject
 @property(nonatomic,assign)Float64 outSampleRate;  //采样率
 @property(nonatomic,assign)UInt32 outChannelsPerFrame;
 @property(nonatomic,assign,readonly)UInt32 outFramesPerPacket;
+@property(nonatomic,weak)id<AACEncoderFromPCMDelegate>delegate;
 
 -(void)encodeWithBufferWithBuffer:(CMSampleBufferRef)buffer;
 

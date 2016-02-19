@@ -9,10 +9,14 @@
 #import <Foundation/Foundation.h>
 #import <CoreMedia/CoreMedia.h>
 
-@protocol GJH264DecoderDelegate
--(void)decodeCompleteImageData:(CMSampleBufferRef)imageBuffer;
+@protocol PCMDecodeFromAACDelegate
+-(void)pcmDecodeCompleteData:(NSData*)pcmData;
 @end
 @interface PCMDecodeFromAAC : NSObject
+@property(nonatomic,assign)AudioStreamBasicDescription outPacketFormat;
+
+
+
 -(void)decodeBuffer:(uint8_t*)buffer withLenth:(uint32_t)totalLenth;
 
 @end

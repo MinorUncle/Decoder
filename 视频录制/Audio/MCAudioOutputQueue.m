@@ -120,6 +120,7 @@ const int MCAudioQueueBufferCount = 3;
     if (status != noErr)
     {
         _audioQueue = NULL;
+        [self _errorForOSStatus:status error:nil];
         return;
     }
     
@@ -128,6 +129,7 @@ const int MCAudioQueueBufferCount = 3;
     {
         AudioQueueDispose(_audioQueue, YES);
         _audioQueue = NULL;
+        [self _errorForOSStatus:status error:nil];
         return;
     }
     
@@ -157,7 +159,11 @@ const int MCAudioQueueBufferCount = 3;
     
     if (magicCookie)
     {
-        AudioQueueSetProperty(_audioQueue, kAudioQueueProperty_MagicCookie, [magicCookie bytes], (UInt32)[magicCookie length]);
+       OSStatus status = AudioQueueSetProperty(_audioQueue, kAudioQueueProperty_MagicCookie, [magicCookie bytes], (UInt32)[magicCookie length]);
+        if (status != noErr) {
+            [self _errorForOSStatus:status error:nil];
+
+        }
     }
     
     [self setVolumeParameter];
@@ -243,7 +249,7 @@ const int MCAudioQueueBufferCount = 3;
     OSStatus status = AudioQueueEnqueueBuffer(_audioQueue, bufferObj.buffer, packetCount, packetDescriptions);
     
    
-    [self _start];
+    status = [self _start];
     
     return status == noErr;
 }

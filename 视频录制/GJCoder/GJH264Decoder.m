@@ -110,18 +110,13 @@ void decodeOutputCallback(
     }
 }
 
-
-
-
 -(void)decodeBuffer:(uint8_t*)frame withLenth:(uint32_t)frameSize;
 {
     NSLog(@"decodeFrame:%@",[NSThread currentThread]);
-    
     OSStatus status;
     //    NSData* d = [NSData dataWithBytes:frame length:frameSize];
     //      NSLog(@"d:%@",d);
     uint8_t *data = NULL;
-
     
     int startCodeIndex = 0;
     int secondStartCodeIndex = 0;

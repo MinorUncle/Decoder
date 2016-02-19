@@ -111,8 +111,9 @@ static void MCAudioFileStreamPacketsCallBack(void *inClientData,
     if (status != noErr)
     {
         _audioFileStreamID = NULL;
+        [self _errorForOSStatus:status error:error];
     }
-    [self _errorForOSStatus:status error:error];
+    
     return status == noErr;
 }
 

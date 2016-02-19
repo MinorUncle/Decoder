@@ -27,6 +27,11 @@
 		C56C35BD1C3FBFD800434694 /* HYOpenALHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = C56C35B71C3FBFD800434694 /* HYOpenALHelper.m */; };
 		C56C35BF1C3FBFD800434694 /* RWPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = C56C35BC1C3FBFD800434694 /* RWPlayer.m */; };
 		C58ECD4D1C3A661300DE8056 /* OpenGLView20.m in Sources */ = {isa = PBXBuildFile; fileRef = C58ECD4C1C3A661300DE8056 /* OpenGLView20.m */; };
+		C5F2B2C81C76E62600B2AA78 /* MCAudioFileStream.m in Sources */ = {isa = PBXBuildFile; fileRef = C5F2B2C71C76E62600B2AA78 /* MCAudioFileStream.m */; };
+		C5F2B2CB1C76E65900B2AA78 /* MCParsedAudioData.m in Sources */ = {isa = PBXBuildFile; fileRef = C5F2B2CA1C76E65900B2AA78 /* MCParsedAudioData.m */; };
+		C5F2B2D41C77051200B2AA78 /* AudioEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = C5F2B2D31C77051200B2AA78 /* AudioEncoder.m */; };
+		C5F2B2D71C770CAA00B2AA78 /* AACDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = C5F2B2D61C770CAA00B2AA78 /* AACDecoder.m */; };
+		C5F2B2DA1C770DC300B2AA78 /* RWFormat.m in Sources */ = {isa = PBXBuildFile; fileRef = C5F2B2D91C770DC300B2AA78 /* RWFormat.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -77,6 +82,16 @@
 		C56C35BC1C3FBFD800434694 /* RWPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RWPlayer.m; sourceTree = "<group>"; };
 		C58ECD4B1C3A661300DE8056 /* OpenGLView20.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenGLView20.h; sourceTree = "<group>"; };
 		C58ECD4C1C3A661300DE8056 /* OpenGLView20.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OpenGLView20.m; sourceTree = "<group>"; };
+		C5F2B2C61C76E62600B2AA78 /* MCAudioFileStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MCAudioFileStream.h; sourceTree = "<group>"; };
+		C5F2B2C71C76E62600B2AA78 /* MCAudioFileStream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MCAudioFileStream.m; sourceTree = "<group>"; };
+		C5F2B2C91C76E65900B2AA78 /* MCParsedAudioData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MCParsedAudioData.h; sourceTree = "<group>"; };
+		C5F2B2CA1C76E65900B2AA78 /* MCParsedAudioData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MCParsedAudioData.m; sourceTree = "<group>"; };
+		C5F2B2D21C77051200B2AA78 /* AudioEncoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioEncoder.h; sourceTree = "<group>"; };
+		C5F2B2D31C77051200B2AA78 /* AudioEncoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AudioEncoder.m; sourceTree = "<group>"; };
+		C5F2B2D51C770CAA00B2AA78 /* AACDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AACDecoder.h; sourceTree = "<group>"; };
+		C5F2B2D61C770CAA00B2AA78 /* AACDecoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AACDecoder.m; sourceTree = "<group>"; };
+		C5F2B2D81C770DC300B2AA78 /* RWFormat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RWFormat.h; sourceTree = "<group>"; };
+		C5F2B2D91C770DC300B2AA78 /* RWFormat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RWFormat.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -124,6 +139,12 @@
 				AEF985231B959CF4000E6339 /* AppDelegate.m */,
 				AEF985251B959CF4000E6339 /* ViewController.h */,
 				AEF985261B959CF4000E6339 /* ViewController.m */,
+				C5F2B2D21C77051200B2AA78 /* AudioEncoder.h */,
+				C5F2B2D31C77051200B2AA78 /* AudioEncoder.m */,
+				C5F2B2D81C770DC300B2AA78 /* RWFormat.h */,
+				C5F2B2D91C770DC300B2AA78 /* RWFormat.m */,
+				C5F2B2D51C770CAA00B2AA78 /* AACDecoder.h */,
+				C5F2B2D61C770CAA00B2AA78 /* AACDecoder.m */,
 				C58ECD4A1C3A661300DE8056 /* OpenGLPlayer */,
 				C56C35B51C3FBFD800434694 /* HYOpenALHelper */,
 				C548A79A1C2BF8C8001CDB85 /* openGL */,
@@ -164,10 +185,14 @@
 		C500D31B1C7562B700EB4F02 /* Audio */ = {
 			isa = PBXGroup;
 			children = (
+				C5F2B2C91C76E65900B2AA78 /* MCParsedAudioData.h */,
+				C5F2B2CA1C76E65900B2AA78 /* MCParsedAudioData.m */,
 				C500D3311C75954F00EB4F02 /* MCAudioSession.h */,
 				C500D3321C75954F00EB4F02 /* MCAudioSession.m */,
 				C500D3221C7562B700EB4F02 /* MCAudioOutputQueue.h */,
 				C500D3231C7562B700EB4F02 /* MCAudioOutputQueue.m */,
+				C5F2B2C61C76E62600B2AA78 /* MCAudioFileStream.h */,
+				C5F2B2C71C76E62600B2AA78 /* MCAudioFileStream.m */,
 			);
 			path = Audio;
 			sourceTree = "<group>";
@@ -332,16 +357,21 @@
 			buildActionMask = 2147483647;
 			files = (
 				AEF985271B959CF4000E6339 /* ViewController.m in Sources */,
+				C5F2B2C81C76E62600B2AA78 /* MCAudioFileStream.m in Sources */,
 				C52C11391C72F0DE0061DD83 /* PAudioQueueBufferPool.m in Sources */,
 				C56C35931C3F66A800434694 /* PCMDecodeFromAAC.m in Sources */,
 				C500D32D1C7562B700EB4F02 /* MCAudioOutputQueue.m in Sources */,
 				C56C35BF1C3FBFD800434694 /* RWPlayer.m in Sources */,
 				AEF985241B959CF4000E6339 /* AppDelegate.m in Sources */,
 				AEF985211B959CF4000E6339 /* main.m in Sources */,
+				C5F2B2D41C77051200B2AA78 /* AudioEncoder.m in Sources */,
 				C56C35901C3F661E00434694 /* AACEncoderFromPCM.m in Sources */,
+				C5F2B2DA1C770DC300B2AA78 /* RWFormat.m in Sources */,
+				C5F2B2CB1C76E65900B2AA78 /* MCParsedAudioData.m in Sources */,
 				C544223B1C71B09200C66311 /* GJH264Decoder.m in Sources */,
 				C548A79F1C2BF8C8001CDB85 /* AAPLEAGLLayer.m in Sources */,
 				C58ECD4D1C3A661300DE8056 /* OpenGLView20.m in Sources */,
+				C5F2B2D71C770CAA00B2AA78 /* AACDecoder.m in Sources */,
 				C56C35BD1C3FBFD800434694 /* HYOpenALHelper.m in Sources */,
 				C544223C1C71B09200C66311 /* GJH264Encoder.m in Sources */,
 				C500D3331C75954F00EB4F02 /* MCAudioSession.m in Sources */,
