@@ -18,6 +18,6 @@
 @property(nonatomic,assign,readonly)UInt32 outFramesPerPacket;
 @property(nonatomic,weak)id<AACEncoderFromPCMDelegate>delegate;
 
--(void)encodeWithBufferWithBuffer:(CMSampleBufferRef)buffer;
+-(void)encodeWithBuffer:(CMSampleBufferRef)buffer;
 
 @end

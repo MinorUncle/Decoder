@@ -340,6 +340,9 @@ static void MCAudioFileStreamPacketsCallBack(void *inClientData,
         packetDescriptioins = descriptions;
     }
     
+    if ([self.delegate respondsToSelector:@selector(audioFileStream:ParseDataResultWithPacketDescription:numberOfPacket:)]) {
+        [self.delegate audioFileStream:self ParseDataResultWithPacketDescription:packetDescriptioins numberOfPacket:numberOfPackets];
+    }
     NSMutableArray *parsedDataArray = [[NSMutableArray alloc] init];
     for (int i = 0; i < numberOfPackets; ++i)
     {

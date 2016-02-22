@@ -22,6 +22,7 @@
 		C548A79F1C2BF8C8001CDB85 /* AAPLEAGLLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = C548A79C1C2BF8C8001CDB85 /* AAPLEAGLLayer.m */; };
 		C548A7A01C2BF8C8001CDB85 /* Shader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = C548A79D1C2BF8C8001CDB85 /* Shader.fsh */; };
 		C548A7A11C2BF8C8001CDB85 /* Shader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = C548A79E1C2BF8C8001CDB85 /* Shader.vsh */; };
+		C56C1E4B1C7B0C530058DAB5 /* GJAudioQueueRecode.m in Sources */ = {isa = PBXBuildFile; fileRef = C56C1E4A1C7B0C530058DAB5 /* GJAudioQueueRecode.m */; };
 		C56C35901C3F661E00434694 /* AACEncoderFromPCM.m in Sources */ = {isa = PBXBuildFile; fileRef = C56C358F1C3F661E00434694 /* AACEncoderFromPCM.m */; };
 		C56C35931C3F66A800434694 /* PCMDecodeFromAAC.m in Sources */ = {isa = PBXBuildFile; fileRef = C56C35921C3F66A800434694 /* PCMDecodeFromAAC.m */; };
 		C56C35BD1C3FBFD800434694 /* HYOpenALHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = C56C35B71C3FBFD800434694 /* HYOpenALHelper.m */; };
@@ -72,6 +73,8 @@
 		C548A79C1C2BF8C8001CDB85 /* AAPLEAGLLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AAPLEAGLLayer.m; sourceTree = "<group>"; };
 		C548A79D1C2BF8C8001CDB85 /* Shader.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = Shader.fsh; sourceTree = "<group>"; };
 		C548A79E1C2BF8C8001CDB85 /* Shader.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = Shader.vsh; sourceTree = "<group>"; };
+		C56C1E491C7B0C530058DAB5 /* GJAudioQueueRecode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GJAudioQueueRecode.h; sourceTree = "<group>"; };
+		C56C1E4A1C7B0C530058DAB5 /* GJAudioQueueRecode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GJAudioQueueRecode.m; sourceTree = "<group>"; };
 		C56C358E1C3F661E00434694 /* AACEncoderFromPCM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AACEncoderFromPCM.h; path = ../AACEncoderFromPCM.h; sourceTree = "<group>"; };
 		C56C358F1C3F661E00434694 /* AACEncoderFromPCM.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AACEncoderFromPCM.m; path = ../AACEncoderFromPCM.m; sourceTree = "<group>"; };
 		C56C35911C3F66A800434694 /* PCMDecodeFromAAC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PCMDecodeFromAAC.h; path = ../PCMDecodeFromAAC.h; sourceTree = "<group>"; };
@@ -210,6 +213,8 @@
 				C544223A1C71B09200C66311 /* GJH264Encoder.m */,
 				C52C11371C72F0DE0061DD83 /* PAudioQueueBufferPool.h */,
 				C52C11381C72F0DE0061DD83 /* PAudioQueueBufferPool.m */,
+				C56C1E491C7B0C530058DAB5 /* GJAudioQueueRecode.h */,
+				C56C1E4A1C7B0C530058DAB5 /* GJAudioQueueRecode.m */,
 			);
 			path = GJCoder;
 			sourceTree = "<group>";
@@ -357,6 +362,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AEF985271B959CF4000E6339 /* ViewController.m in Sources */,
+				C56C1E4B1C7B0C530058DAB5 /* GJAudioQueueRecode.m in Sources */,
 				C5F2B2C81C76E62600B2AA78 /* MCAudioFileStream.m in Sources */,
 				C52C11391C72F0DE0061DD83 /* PAudioQueueBufferPool.m in Sources */,
 				C56C35931C3F66A800434694 /* PCMDecodeFromAAC.m in Sources */,

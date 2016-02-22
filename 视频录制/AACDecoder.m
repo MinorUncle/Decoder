@@ -258,7 +258,7 @@ static OSStatus handleAudioConverterComplexInputDataProc(AudioConverterRef inAud
                                    &mSourceAudioStreamDescription);
         char *formatName = (char *)&(mSourceAudioStreamDescription.mFormatID);
         NSLog(@"format is: %c%c%c%c", formatName[3], formatName[2], formatName[1], formatName[0]);
-        //        }
+        //        } 
     }
     else if (inPropertyID == kAudioFileStreamProperty_BitRate) {
         
@@ -290,7 +290,7 @@ static OSStatus handleAudioConverterComplexInputDataProc(AudioConverterRef inAud
     
     if (NULL == mAudioConverter) {
         
-        _mTargetAudioStreamDescripion.mSampleRate         = 8000;
+        _mTargetAudioStreamDescripion.mSampleRate         = 44100;
         _mTargetAudioStreamDescripion.mFormatID           = kAudioFormatLinearPCM;
         _mTargetAudioStreamDescripion.mFormatFlags        = kLinearPCMFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
         _mTargetAudioStreamDescripion.mChannelsPerFrame   = 1;

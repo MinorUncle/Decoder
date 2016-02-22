@@ -34,13 +34,19 @@
 //编码输入
 static OSStatus encodeInputDataProc(AudioConverterRef inConverter, UInt32 *ioNumberDataPackets, AudioBufferList *ioData,AudioStreamPacketDescription **outDataPacketDescription, void *inUserData)
 { //<span style="font-family: Arial, Helvetica, sans-serif;">AudioConverterFillComplexBuffer 编码过程中，会要求这个函数来填充输入数据，也就是原始PCM数据</span>
-    *ioData = *(AudioBufferList*)inUserData;
+    
+    AudioBufferList* param = (AudioBufferList*)inUserData;
+    
+    ioData->mBuffers[0].mData = param->mBuffers->mData;
+    ioData->mBuffers[0].mNumberChannels = param->mBuffers->mNumberChannels;
+    ioData->mBuffers[0].mDataByteSize = param->mBuffers->mDataByteSize;
+    
     *ioNumberDataPackets = 1;
 
     return noErr;
 }
 
--(void)encodeWithBufferWithBuffer:(CMSampleBufferRef)sampleBuffer{
+-(void)encodeWithBuffer:(CMSampleBufferRef)sampleBuffer{
     if (![self _createEncodeConverterWithBuffer:sampleBuffer]) {
         return;
     }
@@ -54,6 +60,7 @@ static OSStatus encodeInputDataProc(AudioConverterRef inConverter, UInt32 *ioNum
         NSLog(@"CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer error:%d",status);
         return;
     }
+    
     status = AudioConverterFillComplexBuffer(_encodeConvert, encodeInputDataProc, &inBufferList, &outputDataPacketSize, &_outCacheBufferList, nil);
     if (status != noErr) {
         NSLog(@"AudioConverterFillComplexBuffer error:%d",status);

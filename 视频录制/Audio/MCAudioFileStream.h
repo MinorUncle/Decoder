@@ -16,6 +16,8 @@
 - (void)audioFileStream:(MCAudioFileStream *)audioFileStream audioDataParsed:(NSArray *)audioData;
 @optional
 - (void)audioFileStreamReadyToProducePackets:(MCAudioFileStream *)audioFileStream;
+- (AudioStreamPacketDescription)audioFileStream:(MCAudioFileStream *)audioFileStream ParseDataResultWithPacketDescription:(AudioStreamPacketDescription*)packetDescription numberOfPacket:(int)number;;
+
 @end
 
 @interface MCAudioFileStream : NSObject
@@ -31,6 +33,7 @@
 @property (nonatomic,assign,readonly) UInt32 bitRate;
 @property (nonatomic,assign,readonly) UInt32 maxPacketSize;
 @property (nonatomic,assign,readonly) UInt64 audioDataByteCount;
+
 
 - (instancetype)initWithFileType:(AudioFileTypeID)fileType fileSize:(unsigned long long)fileSize error:(NSError **)error;
 

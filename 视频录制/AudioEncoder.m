@@ -29,6 +29,7 @@
     
     AudioStreamBasicDescription inputFormat = *(CMAudioFormatDescriptionGetStreamBasicDescription(CMSampleBufferGetFormatDescription(sampleBuffer))); // 输入音频格式
     NSLog(@"mSampleRate:%lf mFramesPerPacket:%u mChannelsPerFrame:%u mBitsPerChannel:%u mBytesPerFrame:%u mBytesPerPacket:%u ",inputFormat.mSampleRate,(unsigned int)inputFormat.mFramesPerPacket,inputFormat.mChannelsPerFrame,inputFormat.mBitsPerChannel,inputFormat.mBytesPerFrame,inputFormat.mBytesPerPacket);
+    
 
     AudioStreamBasicDescription outputFormat; // 这里开始是输出音频格式
     memset(&outputFormat, 0, sizeof(outputFormat));

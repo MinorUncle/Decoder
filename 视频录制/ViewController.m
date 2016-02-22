@@ -15,6 +15,7 @@
 #import "GJH264Encoder.h"
 #import "MCAudioOutputQueue.h"
 #import "AACEncoderFromPCM.h"
+#import "PCMDecodeFromAAC.h"
 #import "MCAudioFileStream.h"
 #import "AudioEncoder.h"
 #import "AACDecoder.h"
@@ -32,7 +33,7 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
     NSTimer* _timer;
     MCAudioOutputQueue* _audioOutputQueue;
     AACEncoderFromPCM* _audioEncoder;
-    MCAudioFileStream* _audioDecoder;
+    PCMDecodeFromAAC* _audioDecoder;
     AudioEncoder* _RWAudioEncoder;
     AACDecoder* _RWAudioDecoder;
 
@@ -103,8 +104,9 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
  
     _audioEncoder = [[AACEncoderFromPCM alloc]init];
     _audioEncoder.delegate = self;
-    _audioDecoder = [[MCAudioFileStream alloc]initWithFileType:kAudioFileAAC_ADTSType fileSize:0 error:nil];
-    _audioDecoder.delegate = self;
+//    _audioDecoder = [[MCAudioFileStream alloc]initWithFileType:kAudioFileAAC_ADTSType fileSize:0 error:nil];
+    _audioDecoder = [[PCMDecodeFromAAC alloc]init];
+//    _audioDecoder.delegate = self;
     _RWAudioEncoder = [[AudioEncoder alloc]init];
     _RWAudioEncoder.aacCallbackDelegate = self;
     _RWAudioDecoder = [[AACDecoder alloc]init];
@@ -302,7 +304,6 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
             [self.captureDataOutput setSampleBufferDelegate:nil queue:NULL];
             [sender setTitle:@"开始录制" forState:UIControlStateNormal];
         }
-       
     }
 }
 
@@ -346,7 +347,6 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
         NSLog(@"error:%@",error.localizedDescription);
         return;
     }
-    
 }
 
 #pragma mark - 视频输出代理
@@ -414,8 +414,8 @@ bool i = false;
         NSLog(@"video");
     }else if(connection == self.audioConnect){
         NSLog(@"audio");
-        [_RWAudioEncoder encodeAAC:sampleBuffer];
-//        [_audioEncoder encodeWithBufferWithBuffer:sampleBuffer];
+//        [_RWAudioEncoder encodeAAC:sampleBuffer];
+        [_audioEncoder encodeWithBuffer:sampleBuffer];
 //        [self playSampleBuffer:sampleBuffer];
 
     }
@@ -631,9 +631,9 @@ bool i = false;
 }
 
 -(void)audioFileStream:(MCAudioFileStream *)audioFileStream audioDataParsed:(NSArray *)audioData{
-    if (_audioOutputQueue == nil) {
-        _audioOutputQueue = [[MCAudioOutputQueue alloc]initWithFormat:_audioDecoder.format bufferSize:2000 macgicCookie:[_audioDecoder fetchMagicCookie]];
-    }
+//    if (_audioOutputQueue == nil) {
+//        _audioOutputQueue = [[MCAudioOutputQueue alloc]initWithFormat:_audioDecoder.format bufferSize:2000 macgicCookie:[_audioDecoder fetchMagicCookie]];
+//    }
     for (MCParsedAudioData* data in audioData) {
         AudioStreamPacketDescription desc = data.packetDescription;
         [_audioOutputQueue playData:data.data packetCount:1 packetDescriptions:&desc isEof:NO];
@@ -641,8 +641,9 @@ bool i = false;
     
 }
 -(void)aacEncodeCompleteBuffer:(uint8_t *)buffer withLenth:(long)totalLenth{
-    NSData* date = [NSData dataWithBytes:buffer length:totalLenth];
-    [_audioDecoder parseData:date error:nil];
+    NSData* data = [NSData dataWithBytes:buffer length:totalLenth];
+//    [_RWAudioDecoder canDecodeData:data];
+    [_audioDecoder decodeBuffer:buffer withLenth:(uint32_t)totalLenth];
 }
 -(void)playSampleBuffer:(CMSampleBufferRef)sampleBuffer{
     
@@ -680,15 +681,14 @@ bool i = false;
 }
 
 -(void)aacCallBack:(char *)aacData length:(int)datalength pts:(CMTime)pts{
-    NSData* date = [NSData dataWithBytes:aacData length:datalength];
-    
+//    NSData* date = [NSData dataWithBytes:aacData length:datalength];
 //    [_audioDecoder parseData:date error:nil];
-    [_RWAudioDecoder canDecodeData:date];
+//    [_RWAudioDecoder canDecodeData:date];
     
 }
 -(void)pcmDataToPlay:(char *)buf size:(int)size{
     if (_audioOutputQueue == nil) {
-        _audioOutputQueue = [[MCAudioOutputQueue alloc]initWithFormat:_RWAudioDecoder.mTargetAudioStreamDescripion bufferSize:2000 macgicCookie:[_RWAudioDecoder fetchMagicCookie]];
+        _audioOutputQueue = [[MCAudioOutputQueue alloc]initWithFormat:_RWAudioDecoder.mTargetAudioStreamDescripion bufferSize:3000 macgicCookie:[_RWAudioDecoder fetchMagicCookie]];
     }
     NSData* data = [NSData dataWithBytes:buf length:size];
 
