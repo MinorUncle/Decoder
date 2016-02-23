@@ -19,6 +19,22 @@ typedef struct _AQRecorderState {
     SInt64                       mCurrentPacket;                // 7
     bool                         mIsRunning;                    // 8
 } AQRecorderState;
-@interface GJAudioQueueRecode : NSObject
+@class GJAudioQueueRecoder;
+
+@protocol GJAudioQueueRecoderDelegate <NSObject>
+@optional
+//回调不带头信息
+-(void)GJAudioQueueRecoder:(GJAudioQueueRecoder*) recoder streamData:(void*)data lenth:(int)lenth packetCount:(int)packetCount packetDescriptions:(const AudioStreamPacketDescription *)packetDescriptions;
+
+@end
+@interface GJAudioQueueRecoder : NSObject
+@property(nonatomic,assign)AQRecorderState *pAqData;
+@property(nonatomic,weak)id<GJAudioQueueRecoderDelegate> delegate;
+
+- (instancetype)initWithPath:(NSString*)path fileType:(AudioFileTypeID)fileType;
+- (instancetype)initWithStreamFormat:(AudioFormatID)formatID;
+
+-(BOOL)startRecodeAudio;
+-(void)stop;
 
 @end

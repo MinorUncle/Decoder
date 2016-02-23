@@ -16,13 +16,14 @@
 		AEF9853B1B959CF4000E6339 /* ____Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = AEF9853A1B959CF4000E6339 /* ____Tests.m */; };
 		C500D32D1C7562B700EB4F02 /* MCAudioOutputQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = C500D3231C7562B700EB4F02 /* MCAudioOutputQueue.m */; };
 		C500D3331C75954F00EB4F02 /* MCAudioSession.m in Sources */ = {isa = PBXBuildFile; fileRef = C500D3321C75954F00EB4F02 /* MCAudioSession.m */; };
+		C50DD33F1C7C60ED00A25374 /* GJAudioQueuePlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = C50DD33C1C7C60ED00A25374 /* GJAudioQueuePlayer.m */; };
+		C50DD3401C7C60ED00A25374 /* GJAudioQueueRecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = C50DD33E1C7C60ED00A25374 /* GJAudioQueueRecoder.m */; };
 		C52C11391C72F0DE0061DD83 /* PAudioQueueBufferPool.m in Sources */ = {isa = PBXBuildFile; fileRef = C52C11381C72F0DE0061DD83 /* PAudioQueueBufferPool.m */; };
 		C544223B1C71B09200C66311 /* GJH264Decoder.m in Sources */ = {isa = PBXBuildFile; fileRef = C54422381C71B09200C66311 /* GJH264Decoder.m */; };
 		C544223C1C71B09200C66311 /* GJH264Encoder.m in Sources */ = {isa = PBXBuildFile; fileRef = C544223A1C71B09200C66311 /* GJH264Encoder.m */; };
 		C548A79F1C2BF8C8001CDB85 /* AAPLEAGLLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = C548A79C1C2BF8C8001CDB85 /* AAPLEAGLLayer.m */; };
 		C548A7A01C2BF8C8001CDB85 /* Shader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = C548A79D1C2BF8C8001CDB85 /* Shader.fsh */; };
 		C548A7A11C2BF8C8001CDB85 /* Shader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = C548A79E1C2BF8C8001CDB85 /* Shader.vsh */; };
-		C56C1E4B1C7B0C530058DAB5 /* GJAudioQueueRecode.m in Sources */ = {isa = PBXBuildFile; fileRef = C56C1E4A1C7B0C530058DAB5 /* GJAudioQueueRecode.m */; };
 		C56C35901C3F661E00434694 /* AACEncoderFromPCM.m in Sources */ = {isa = PBXBuildFile; fileRef = C56C358F1C3F661E00434694 /* AACEncoderFromPCM.m */; };
 		C56C35931C3F66A800434694 /* PCMDecodeFromAAC.m in Sources */ = {isa = PBXBuildFile; fileRef = C56C35921C3F66A800434694 /* PCMDecodeFromAAC.m */; };
 		C56C35BD1C3FBFD800434694 /* HYOpenALHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = C56C35B71C3FBFD800434694 /* HYOpenALHelper.m */; };
@@ -63,6 +64,10 @@
 		C500D3231C7562B700EB4F02 /* MCAudioOutputQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MCAudioOutputQueue.m; sourceTree = "<group>"; };
 		C500D3311C75954F00EB4F02 /* MCAudioSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MCAudioSession.h; sourceTree = "<group>"; };
 		C500D3321C75954F00EB4F02 /* MCAudioSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MCAudioSession.m; sourceTree = "<group>"; };
+		C50DD33B1C7C60ED00A25374 /* GJAudioQueuePlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GJAudioQueuePlayer.h; sourceTree = "<group>"; };
+		C50DD33C1C7C60ED00A25374 /* GJAudioQueuePlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GJAudioQueuePlayer.m; sourceTree = "<group>"; };
+		C50DD33D1C7C60ED00A25374 /* GJAudioQueueRecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GJAudioQueueRecoder.h; sourceTree = "<group>"; };
+		C50DD33E1C7C60ED00A25374 /* GJAudioQueueRecoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GJAudioQueueRecoder.m; sourceTree = "<group>"; };
 		C52C11371C72F0DE0061DD83 /* PAudioQueueBufferPool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PAudioQueueBufferPool.h; sourceTree = "<group>"; };
 		C52C11381C72F0DE0061DD83 /* PAudioQueueBufferPool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PAudioQueueBufferPool.m; sourceTree = "<group>"; };
 		C54422371C71B09200C66311 /* GJH264Decoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GJH264Decoder.h; sourceTree = "<group>"; };
@@ -73,8 +78,6 @@
 		C548A79C1C2BF8C8001CDB85 /* AAPLEAGLLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AAPLEAGLLayer.m; sourceTree = "<group>"; };
 		C548A79D1C2BF8C8001CDB85 /* Shader.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = Shader.fsh; sourceTree = "<group>"; };
 		C548A79E1C2BF8C8001CDB85 /* Shader.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = Shader.vsh; sourceTree = "<group>"; };
-		C56C1E491C7B0C530058DAB5 /* GJAudioQueueRecode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GJAudioQueueRecode.h; sourceTree = "<group>"; };
-		C56C1E4A1C7B0C530058DAB5 /* GJAudioQueueRecode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GJAudioQueueRecode.m; sourceTree = "<group>"; };
 		C56C358E1C3F661E00434694 /* AACEncoderFromPCM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AACEncoderFromPCM.h; path = ../AACEncoderFromPCM.h; sourceTree = "<group>"; };
 		C56C358F1C3F661E00434694 /* AACEncoderFromPCM.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AACEncoderFromPCM.m; path = ../AACEncoderFromPCM.m; sourceTree = "<group>"; };
 		C56C35911C3F66A800434694 /* PCMDecodeFromAAC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PCMDecodeFromAAC.h; path = ../PCMDecodeFromAAC.h; sourceTree = "<group>"; };
@@ -213,8 +216,10 @@
 				C544223A1C71B09200C66311 /* GJH264Encoder.m */,
 				C52C11371C72F0DE0061DD83 /* PAudioQueueBufferPool.h */,
 				C52C11381C72F0DE0061DD83 /* PAudioQueueBufferPool.m */,
-				C56C1E491C7B0C530058DAB5 /* GJAudioQueueRecode.h */,
-				C56C1E4A1C7B0C530058DAB5 /* GJAudioQueueRecode.m */,
+				C50DD33B1C7C60ED00A25374 /* GJAudioQueuePlayer.h */,
+				C50DD33C1C7C60ED00A25374 /* GJAudioQueuePlayer.m */,
+				C50DD33D1C7C60ED00A25374 /* GJAudioQueueRecoder.h */,
+				C50DD33E1C7C60ED00A25374 /* GJAudioQueueRecoder.m */,
 			);
 			path = GJCoder;
 			sourceTree = "<group>";
@@ -362,10 +367,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				AEF985271B959CF4000E6339 /* ViewController.m in Sources */,
-				C56C1E4B1C7B0C530058DAB5 /* GJAudioQueueRecode.m in Sources */,
 				C5F2B2C81C76E62600B2AA78 /* MCAudioFileStream.m in Sources */,
 				C52C11391C72F0DE0061DD83 /* PAudioQueueBufferPool.m in Sources */,
+				C50DD3401C7C60ED00A25374 /* GJAudioQueueRecoder.m in Sources */,
 				C56C35931C3F66A800434694 /* PCMDecodeFromAAC.m in Sources */,
+				C50DD33F1C7C60ED00A25374 /* GJAudioQueuePlayer.m in Sources */,
 				C500D32D1C7562B700EB4F02 /* MCAudioOutputQueue.m in Sources */,
 				C56C35BF1C3FBFD800434694 /* RWPlayer.m in Sources */,
 				AEF985241B959CF4000E6339 /* AppDelegate.m in Sources */,
