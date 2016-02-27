@@ -98,7 +98,7 @@ void decodeOutputCallback(
                           CVImageBufferRef imageBuffer,
                           CMTime presentationTimeStamp,
                           CMTime presentationDuration ){
-    NSLog(@"decodeOutputCallback:%@",[NSThread currentThread]);
+//    NSLog(@"decodeOutputCallback:%@",[NSThread currentThread]);
     
     if (status != 0) {
         NSLog(@"解码error:%d",(int)status);
@@ -112,7 +112,7 @@ void decodeOutputCallback(
 
 -(void)decodeBuffer:(uint8_t*)frame withLenth:(uint32_t)frameSize;
 {
-    NSLog(@"decodeFrame:%@",[NSThread currentThread]);
+//    NSLog(@"decodeFrame:%@",[NSThread currentThread]);
     OSStatus status;
     //    NSData* d = [NSData dataWithBytes:frame length:frameSize];
     //      NSLog(@"d:%@",d);
@@ -200,7 +200,7 @@ void decodeOutputCallback(
     
   
     
-    NSLog(@"numtpty:%d",nalu_type);
+//    NSLog(@"numtpty:%d",nalu_type);
 //    if(1)   //5则帧，1则p帧
     
     int offset = _spsSize + _ppsSize;

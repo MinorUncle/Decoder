@@ -24,7 +24,7 @@
 		C548A79F1C2BF8C8001CDB85 /* AAPLEAGLLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = C548A79C1C2BF8C8001CDB85 /* AAPLEAGLLayer.m */; };
 		C548A7A01C2BF8C8001CDB85 /* Shader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = C548A79D1C2BF8C8001CDB85 /* Shader.fsh */; };
 		C548A7A11C2BF8C8001CDB85 /* Shader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = C548A79E1C2BF8C8001CDB85 /* Shader.vsh */; };
-		C56C35901C3F661E00434694 /* AACEncoderFromPCM.m in Sources */ = {isa = PBXBuildFile; fileRef = C56C358F1C3F661E00434694 /* AACEncoderFromPCM.m */; };
+		C56C35901C3F661E00434694 /* AACEncoderFromPCM.mm in Sources */ = {isa = PBXBuildFile; fileRef = C56C358F1C3F661E00434694 /* AACEncoderFromPCM.mm */; };
 		C56C35931C3F66A800434694 /* PCMDecodeFromAAC.m in Sources */ = {isa = PBXBuildFile; fileRef = C56C35921C3F66A800434694 /* PCMDecodeFromAAC.m */; };
 		C56C35BD1C3FBFD800434694 /* HYOpenALHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = C56C35B71C3FBFD800434694 /* HYOpenALHelper.m */; };
 		C56C35BF1C3FBFD800434694 /* RWPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = C56C35BC1C3FBFD800434694 /* RWPlayer.m */; };
@@ -79,7 +79,7 @@
 		C548A79D1C2BF8C8001CDB85 /* Shader.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = Shader.fsh; sourceTree = "<group>"; };
 		C548A79E1C2BF8C8001CDB85 /* Shader.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = Shader.vsh; sourceTree = "<group>"; };
 		C56C358E1C3F661E00434694 /* AACEncoderFromPCM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AACEncoderFromPCM.h; path = ../AACEncoderFromPCM.h; sourceTree = "<group>"; };
-		C56C358F1C3F661E00434694 /* AACEncoderFromPCM.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AACEncoderFromPCM.m; path = ../AACEncoderFromPCM.m; sourceTree = "<group>"; };
+		C56C358F1C3F661E00434694 /* AACEncoderFromPCM.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AACEncoderFromPCM.mm; path = ../AACEncoderFromPCM.mm; sourceTree = "<group>"; };
 		C56C35911C3F66A800434694 /* PCMDecodeFromAAC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PCMDecodeFromAAC.h; path = ../PCMDecodeFromAAC.h; sourceTree = "<group>"; };
 		C56C35921C3F66A800434694 /* PCMDecodeFromAAC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PCMDecodeFromAAC.m; path = ../PCMDecodeFromAAC.m; sourceTree = "<group>"; };
 		C56C35B61C3FBFD800434694 /* HYOpenALHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HYOpenALHelper.h; sourceTree = "<group>"; };
@@ -207,7 +207,7 @@
 			isa = PBXGroup;
 			children = (
 				C56C358E1C3F661E00434694 /* AACEncoderFromPCM.h */,
-				C56C358F1C3F661E00434694 /* AACEncoderFromPCM.m */,
+				C56C358F1C3F661E00434694 /* AACEncoderFromPCM.mm */,
 				C56C35911C3F66A800434694 /* PCMDecodeFromAAC.h */,
 				C56C35921C3F66A800434694 /* PCMDecodeFromAAC.m */,
 				C54422371C71B09200C66311 /* GJH264Decoder.h */,
@@ -377,7 +377,7 @@
 				AEF985241B959CF4000E6339 /* AppDelegate.m in Sources */,
 				AEF985211B959CF4000E6339 /* main.m in Sources */,
 				C5F2B2D41C77051200B2AA78 /* AudioEncoder.m in Sources */,
-				C56C35901C3F661E00434694 /* AACEncoderFromPCM.m in Sources */,
+				C56C35901C3F661E00434694 /* AACEncoderFromPCM.mm in Sources */,
 				C5F2B2DA1C770DC300B2AA78 /* RWFormat.m in Sources */,
 				C5F2B2CB1C76E65900B2AA78 /* MCParsedAudioData.m in Sources */,
 				C544223B1C71B09200C66311 /* GJH264Decoder.m in Sources */,

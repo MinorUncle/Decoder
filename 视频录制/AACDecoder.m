@@ -352,8 +352,8 @@ static OSStatus handleAudioConverterComplexInputDataProc(AudioConverterRef inAud
                                              &ioPacketsNumber,
                                              &pcmBuffList,
                                              mPCMPacketDescriptions);
-    //    char *code = (char *)&status;
-    //    NSLog(@"fill complex buffer return with code: %d %c%c%c%c", status, code[3], code[2], code[1], code[0]);
+        char *code = (char *)&status;
+        NSLog(@"fill complex buffer return with code: %d %c%c%c%c", status, code[3], code[2], code[1], code[0]);
     if (status != 0 && status != -1) {
         return;
     }

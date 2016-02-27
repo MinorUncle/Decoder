@@ -31,7 +31,8 @@ typedef struct _AQRecorderState {
 @property(nonatomic,assign)AQRecorderState *pAqData;
 @property(nonatomic,weak)id<GJAudioQueueRecoderDelegate> delegate;
 
-- (instancetype)initWithPath:(NSString*)path fileType:(AudioFileTypeID)fileType;
+
+//- (instancetype)initWithPath:(NSString*)path fileType:(AudioFileTypeID)fileType;
 - (instancetype)initWithStreamFormat:(AudioFormatID)formatID;
 
 -(BOOL)startRecodeAudio;

@@ -402,25 +402,8 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
     NSLog(@"flg:%@    value:%lld    timescale:%d   sec:%f 秒",str,time.value,time.timescale,(time.value * 0.1)/time.timescale);
 }
 ////收到buffer
-bool i = false;
 
--(void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
-  
-    
-    if (connection == self.videoConnect) {
-        
-        [_encoder encodeSampleBuffer:sampleBuffer];
-        frameCount++;
-        NSLog(@"video");
-    }else if(connection == self.audioConnect){
-        NSLog(@"audio");
-//        [_RWAudioEncoder encodeAAC:sampleBuffer];
-        [_audioEncoder encodeWithBuffer:sampleBuffer];
-//        [self playSampleBuffer:sampleBuffer];
 
-    }
-    
-}
 
 
 
@@ -609,14 +592,30 @@ bool i = false;
 
 
 
-
+-(void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
+    
+    
+    if (connection == self.videoConnect) {
+        
+        [_encoder encodeSampleBuffer:sampleBuffer];
+        frameCount++;
+        NSLog(@"video");
+    }else if(connection == self.audioConnect){
+        NSLog(@"audio");
+        //        [_RWAudioEncoder encodeAAC:sampleBuffer];
+        [_audioEncoder encodeWithBuffer:sampleBuffer];
+        //        [self playSampleBuffer:sampleBuffer];
+        
+    }
+    
+}
 
 
 #pragma --mark   硬编码成h624
 //编码完成代理
 -(void)encodeCompleteBuffer:(uint8_t *)buffer withLenth:(long)totalLenth{
     totalSize+= totalLenth;
-    NSLog(@"totalLenth:%ld",totalLenth);
+//    NSLog(@"totalLenth:%ld",totalLenth);
     [_decoder decodeBuffer:buffer withLenth:(uint32_t)totalLenth];
 }
 //解码完成代理
@@ -629,6 +628,12 @@ bool i = false;
     [_playView displayYUV420pData:baseAdd width:(uint32_t)w height:(uint32_t)h];
 //    [openGLLayer displayPixelBuffer:imageBuffer];
 }
+-(void)aacEncodeCompleteBuffer:(uint8_t *)buffer withLenth:(long)totalLenth{
+    NSData* data = [NSData dataWithBytes:buffer length:totalLenth];
+        [_RWAudioDecoder canDecodeData:data];
+    NSLog(@"lenth:%ld",totalLenth);
+//    [_audioDecoder decodeBuffer:buffer withLenth:(uint32_t)totalLenth];
+}
 
 -(void)audioFileStream:(MCAudioFileStream *)audioFileStream audioDataParsed:(NSArray *)audioData{
 //    if (_audioOutputQueue == nil) {
@@ -640,11 +645,7 @@ bool i = false;
     }
     
 }
--(void)aacEncodeCompleteBuffer:(uint8_t *)buffer withLenth:(long)totalLenth{
-    NSData* data = [NSData dataWithBytes:buffer length:totalLenth];
-//    [_RWAudioDecoder canDecodeData:data];
-    [_audioDecoder decodeBuffer:buffer withLenth:(uint32_t)totalLenth];
-}
+
 -(void)playSampleBuffer:(CMSampleBufferRef)sampleBuffer{
     
         if (_audioOutputQueue == nil) {
@@ -691,7 +692,6 @@ bool i = false;
         _audioOutputQueue = [[MCAudioOutputQueue alloc]initWithFormat:_RWAudioDecoder.mTargetAudioStreamDescripion bufferSize:3000 macgicCookie:[_RWAudioDecoder fetchMagicCookie]];
     }
     NSData* data = [NSData dataWithBytes:buf length:size];
-
     [_audioOutputQueue playData:data packetCount:1 packetDescriptions:_RWAudioDecoder.packetFormat isEof:NO];
 //    for (MCParsedAudioData* data in audioData) {
 //        AudioStreamPacketDescription desc = data.packetDescription;

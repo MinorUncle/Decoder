@@ -83,23 +83,14 @@ static OSStatus handleAudioConverterComplexInputDataProc(AudioConverterRef inAud
     
     
     //    NSLog(@"rawdata size is: %d, packet number is: %d", (int)mParsedRawDataSize, (int)mParsedRawPacketsNumber);
+    ioData->mNumberBuffers = 1;
+    ioData->mBuffers[0].mData = _currentData->mBuffers[0].mData;
+    ioData->mBuffers[0].mDataByteSize = _currentData->mBuffers[0].mDataByteSize;
+    ioData->mBuffers[0].mNumberChannels = _currentData->mBuffers[0].mNumberChannels;
     
-    *ioData                     = *_currentData;
+    *ioNumberDataPackets = 1;
     
-  
-    
-    // don't forget the packet descriptions if required
-    if (outDataPacketDescription) {
-          NSLog(@"警告，报数量大于1");
-          assert(0);
 
-//        if (mParsedRawPacketDescriptions) {
-//            *outDataPacketDescription = mParsedRawPacketDescriptions;
-//        }
-//        else {
-//            *outDataPacketDescription = NULL;
-//        }
-    }
     
     _currentData     = NULL;
    
@@ -136,12 +127,12 @@ static OSStatus handleAudioConverterComplexInputDataProc(AudioConverterRef inAud
     _mTargetAudioStreamDescription.mBytesPerFrame      = (_mTargetAudioStreamDescription.mBitsPerChannel / 8) * _mTargetAudioStreamDescription.mChannelsPerFrame;
     _mTargetAudioStreamDescription.mBytesPerPacket    = _mTargetAudioStreamDescription.mBytesPerFrame;
     
+    UInt32 size = sizeof(AudioStreamBasicDescription);
+    AudioFormatGetProperty(kAudioFormatProperty_FormatInfo, 0, NULL, &size, &_mTargetAudioStreamDescription);
     
-    char *formatName = (char *)&(_mTargetAudioStreamDescription.mFormatID);
-    NSLog(@"format is: %c%c%c%c", formatName[3], formatName[2], formatName[1], formatName[0]);
-    
-
+   
     OSStatus status = (AudioConverterNew(&_mSourceAudioStreamDescription, &_mTargetAudioStreamDescription, &_decodeConvert));
+    assert(!status);
     if (0 != status) {
         NSLog(@"create AudioConverter failed ");
         return NO;
@@ -236,20 +227,15 @@ static void MCAudioFileStreamPacketsCallBack(void *inClientData,
         {
             status = AudioFileStreamGetProperty(_audioFileStreamID, kAudioFileStreamProperty_MaximumPacketSize, &sizeOfUInt32, &_maxPacketSize);
         }
-    }
-   
-    else if (propertyID == kAudioFileStreamProperty_DataFormat)
+    }else if (propertyID == kAudioFileStreamProperty_DataFormat)
     {
         UInt32 asbdSize = sizeof(_mSourceAudioStreamDescription);
         AudioFileStreamGetProperty(_audioFileStreamID, kAudioFileStreamProperty_DataFormat, &asbdSize, &_mSourceAudioStreamDescription);
         
         char *formatName = (char *)&(_mSourceAudioStreamDescription.mFormatID);
         NSLog(@"format is: %c%c%c%c", formatName[3], formatName[2], formatName[1], formatName[0]);
-
         [self calculatepPacketDuration];
-    }
-    else if (propertyID == kAudioFileStreamProperty_FormatList)
-    {
+    }else if (propertyID == kAudioFileStreamProperty_FormatList){
         Boolean outWriteable;
         UInt32 formatListSize;
         OSStatus status = AudioFileStreamGetPropertyInfo(_audioFileStreamID, kAudioFileStreamProperty_FormatList, &formatListSize, &outWriteable);
@@ -266,7 +252,6 @@ static void MCAudioFileStreamPacketsCallBack(void *inClientData,
                     free(formatList);
                     return;
                 }
-                
                 UInt32 supportedFormatCount = supportedFormatsSize / sizeof(OSType);
                 OSType *supportedFormats = (OSType *)malloc(supportedFormatsSize);
                 status = AudioFormatGetProperty(kAudioFormatProperty_DecodeFormatIDs, 0, NULL, &supportedFormatsSize, supportedFormats);
@@ -276,7 +261,6 @@ static void MCAudioFileStreamPacketsCallBack(void *inClientData,
                     free(supportedFormats);
                     return;
                 }
-                
                 for (int i = 0; i * sizeof(AudioFormatListItem) < formatListSize; i ++)
                 {
                     AudioStreamBasicDescription format = formatList[i].mASBD;
@@ -285,7 +269,6 @@ static void MCAudioFileStreamPacketsCallBack(void *inClientData,
                         NSLog(@"format:%d  support:%d",(unsigned int)format.mFormatID,(unsigned int)supportedFormats[j]);
                         if (format.mFormatID == supportedFormats[j])
                         {
-                            
                             _mSourceAudioStreamDescription = format;
                             [self calculatepPacketDuration];
                         }
@@ -306,19 +289,15 @@ static void MCAudioFileStreamPacketsCallBack(void *inClientData,
     if (_discontinuous){
         _discontinuous = NO;
     }
-    
-    
     if (numberOfBytes == 0 || numberOfPackets == 0){
         return;
     }
-    
     BOOL deletePackDesc = NO;
     if (packetDescriptioins == NULL)
     {
         deletePackDesc = YES;
         UInt32 packetSize = numberOfBytes / numberOfPackets;
         AudioStreamPacketDescription *descriptions = (AudioStreamPacketDescription *)malloc(sizeof(AudioStreamPacketDescription) * numberOfPackets);
-        
         for (int i = 0; i < numberOfPackets; i++)
         {
             UInt32 packetOffset = packetSize * i;
@@ -336,14 +315,21 @@ static void MCAudioFileStreamPacketsCallBack(void *inClientData,
         packetDescriptioins = descriptions;
     }
     
-    
     AudioBufferList dataList;
     dataList.mNumberBuffers = 1;
     dataList.mBuffers[0].mData = packets;
     dataList.mBuffers[0].mDataByteSize = numberOfBytes;
+    dataList.mBuffers[0].mNumberChannels = 1;
+    
+    UInt32 outPCMBufferSize = numberOfPackets;
     _currentData = &dataList;
     if (_decodeConvert == NULL) {
-        [self _createEncoder];
+       BOOL status = [self _createEncoder];
+        if (!status) {
+            return;
+        }else{
+            outPCMBufferSize = numberOfBytes / _mTargetAudioStreamDescription.mBytesPerPacket;
+        }
     }
     
     NSMutableArray *parsedDataArray = [[NSMutableArray alloc] init];
@@ -358,21 +344,23 @@ static void MCAudioFileStreamPacketsCallBack(void *inClientData,
             [self calculateBitRate];
         }
     }
+    
     AudioBufferList outPCMBufferList;
-    UInt32 outPCMBufferSize = sizeof(outPCMBufferList);
     AudioStreamPacketDescription* outPacketDescriptioins = malloc(sizeof(AudioStreamPacketDescription) * numberOfPackets);
     OSStatus status = AudioConverterFillComplexBuffer(_decodeConvert,
                                                       handleAudioConverterComplexInputDataProc,
                                                       (__bridge void *)self,
                                                       &outPCMBufferSize,
                                                       &outPCMBufferList,
-                                                      NULL);
-    
-    assert(!status);
+                                                      packetDescriptioins);
+    char* statusStr = (char*)&status;
+    NSLog(@"%c %c %c %c",statusStr[0],statusStr[1],statusStr[2],statusStr[3]);
+//    assert(!status);
     
     if (deletePackDesc)
     {
         free(packetDescriptioins);
+    
     }
 }
 

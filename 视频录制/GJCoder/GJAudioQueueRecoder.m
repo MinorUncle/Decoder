@@ -9,6 +9,7 @@
 #import "GJAudioQueueRecoder.h"
 #import <AudioToolbox/AudioFormat.h>
 
+
 @interface GJAudioQueueRecoder()
 {
     AudioFormatID _currentFormatID;
@@ -38,6 +39,7 @@
     }
     return self;
 }
+
 static void HandleInputBuffer (void *aqData, AudioQueueRef inAQ,AudioQueueBufferRef inBuffer,const AudioTimeStamp *inStartTime,UInt32 inNumPackets, const AudioStreamPacketDescription  *inPacketDesc){
     
     GJAudioQueueRecoder* tempSelf = (__bridge GJAudioQueueRecoder*)aqData;
@@ -79,7 +81,6 @@ static void HandleInputBuffer (void *aqData, AudioQueueRef inAQ,AudioQueueBuffer
     
     UInt32 size = sizeof(AudioStreamBasicDescription);
     AudioFormatGetProperty(kAudioFormatProperty_FormatInfo, 0, NULL, &size, &_pAqData->mDataFormat);
-    //
 
 }
 -(void)formatAACWithFormat:(AudioStreamBasicDescription*)format{
