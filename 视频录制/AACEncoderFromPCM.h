@@ -13,11 +13,10 @@
 -(void)aacEncodeCompleteBuffer:(uint8_t*)buffer withLenth:(long)totalLenth;
 @end
 @interface AACEncoderFromPCM : NSObject
-@property(nonatomic,assign)Float64 outSampleRate;  //采样率
-@property(nonatomic,assign)UInt32 outChannelsPerFrame;
-@property(nonatomic,assign,readonly)UInt32 outFramesPerPacket;
+@property(nonatomic,assign,readonly)AudioStreamBasicDescription destFormatDescription;
 @property(nonatomic,weak)id<AACEncoderFromPCMDelegate>delegate;
 
 -(void)encodeWithBuffer:(CMSampleBufferRef)buffer;
-
+- (instancetype)initWithDescription:(AudioStreamBasicDescription)description;
+- (instancetype)init;
 @end

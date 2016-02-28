@@ -1,15 +1,16 @@
 //
-//  PCMEncoderToAAC.m
+//  PCMDecodeFromAAC.m
 //  视频录制
 //
 //  Created by tongguan on 16/1/8.
 //  Copyright © 2016年 未成年大叔. All rights reserved.
 //
+
+
 #import "GJAudioBufferQueue.h"
-#import "AACEncoderFromPCM.h"
+#import "PCMDecodeFromAAC.h"
 
-
-@interface AACEncoderFromPCM ()
+@interface PCMDecodeFromAAC ()
 {
     AudioConverterRef _encodeConvert;
     AudioBufferList _outCacheBufferList;
@@ -18,7 +19,7 @@
 }
 @end
 
-@implementation AACEncoderFromPCM
+@implementation PCMDecodeFromAAC
 - (instancetype)initWithDescription:(AudioStreamBasicDescription)description
 {
     self = [super init];
@@ -38,7 +39,7 @@
         _destFormatDescription.mFramesPerPacket = 1024;
         _destFormatDescription.mSampleRate = 44100;
         _destFormatDescription.mFormatID = kAudioFormatMPEG4AAC;  //aac
-
+        
         
         
         _outCacheBufferList.mNumberBuffers = 1;
@@ -55,7 +56,7 @@ static OSStatus encodeInputDataProc(AudioConverterRef inConverter, UInt32 *ioNum
 { //<span style="font-family: Arial, Helvetica, sans-serif;">AudioConverterFillComplexBuffer 编码过程中，会要求这个函数来填充输入数据，也就是原始PCM数据</span>
     static int i =0;
     NSLog(@"times:%d",i++);
-
+    
     
     GJAudioBufferQueue* param =   ((__bridge AACEncoderFromPCM*)inUserData)->_resumeQueue;
     AudioBuffer * popBuffer;
@@ -64,7 +65,7 @@ static OSStatus encodeInputDataProc(AudioConverterRef inConverter, UInt32 *ioNum
         ioData->mBuffers[0].mNumberChannels = popBuffer->mNumberChannels;
         ioData->mBuffers[0].mDataByteSize = popBuffer->mDataByteSize;
         *ioNumberDataPackets = 1;
-
+        
     }else{
         *ioNumberDataPackets = 0;
         return -1;
@@ -75,71 +76,42 @@ static OSStatus encodeInputDataProc(AudioConverterRef inConverter, UInt32 *ioNum
          *  <#Description#>
          */
     }
-
+    
     return noErr;
 }
 
--(void)encodeWithBuffer:(CMSampleBufferRef)sampleBuffer{
+-(void)decodeBuffer:(uint8_t*)data withLenth:(uint32_t)totalLenth{
+    AudioBuffer buffer;
+    buffer.mData = data;
+    buffer.mDataByteSize = totalLenth;
+    buffer.mNumberChannels = _mSourceAudioStreamDescription.mChannelsPerFrame;
+    _resumeQueue->queuePush(&buffer);
     
-    AudioBufferList inBufferList;
-    CMBlockBufferRef blockBuffer;
-    OSStatus status = CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer(sampleBuffer, nil, &inBufferList, sizeof(inBufferList), NULL, NULL, 0, &blockBuffer);
-    assert(!status);
-    if (status != noErr) {
-        NSLog(@"CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer error:%d",status);
-        return;
-    }
+    [self _createEncodeConverter];
     
-    _resumeQueue->queuePush(&inBufferList.mBuffers[0]);
-    
-    CFRelease(blockBuffer);
-    [self _createEncodeConverterWithBuffer:sampleBuffer];
-
 }
 
--(BOOL)_createEncodeConverterWithBuffer:(CMSampleBufferRef)sampleBuffer{
+-(BOOL)_createEncodeConverter{
     if (_encodeConvert != NULL) {
         return YES;
     }
     
-    const AudioStreamBasicDescription* sourceFormat = CMAudioFormatDescriptionGetStreamBasicDescription(CMSampleBufferGetFormatDescription(sampleBuffer));
-
+    
     UInt32 size = sizeof(AudioStreamBasicDescription);
+    OSStatus status = AudioFormatGetProperty(kAudioFormatProperty_FormatInfo, 0, NULL, &size, &_mSourceAudioStreamDescription);
+    
+    size = sizeof(AudioStreamBasicDescription);
     AudioFormatGetProperty(kAudioFormatProperty_FormatInfo, 0, NULL, &size, &_destFormatDescription);
     
+    status = AudioConverterNew(&_mSourceAudioStreamDescription, &_destFormatDescription, &_encodeConvert);
+    assert(!status);
     
-    AudioClassDescription audioClass;
-   OSStatus status = [self _getAudioClass:&audioClass WithType:_destFormatDescription.mFormatID fromManufacturer:kAppleSoftwareAudioCodecManufacturer];
-    assert(!status);
-    status = AudioConverterNewSpecific(sourceFormat, &_destFormatDescription, 1, &audioClass, &_encodeConvert);
-    assert(!status);
-  
     [self performSelectorInBackground:@selector(_converterStart) withObject:nil];
     NSLog(@"AudioConverterNewSpecific success");
-
+    
     return YES;
 }
--(OSStatus)_getAudioClass:(AudioClassDescription*)audioClass WithType:(UInt32)type fromManufacturer:(UInt32)manufacturer{
-    UInt32 audioClassSize;
-    OSStatus status = AudioFormatGetPropertyInfo(kAudioFormatProperty_Encoders, sizeof(type), &type, &audioClassSize);
-    if (status != noErr) {
-        return status;
-    }
-    int count = audioClassSize / sizeof(AudioClassDescription);
-    AudioClassDescription audioList[count];
-    status = AudioFormatGetProperty(kAudioFormatProperty_Encoders, sizeof(type), &type, &audioClassSize, audioClass);
-    if (status != noErr) {
-        return status;
-    }
-    for (int i= 0; i < count; i++) {
-        if (type == audioList[i].mSubType  && manufacturer == audioList[i].mManufacturer) {
-            *audioClass = audioList[i];
-            break;
-        }
-    }
-    
-    return noErr;
-}
+
 
 -(void)_converterStart{
     
@@ -150,7 +122,7 @@ static OSStatus encodeInputDataProc(AudioConverterRef inConverter, UInt32 *ioNum
         memset(&packetDesc, 0, sizeof(packetDesc));
         _outCacheBufferList.mBuffers[0].mDataByteSize = MAX_FRAME_SIZE;
         OSStatus status = AudioConverterFillComplexBuffer(_encodeConvert, encodeInputDataProc, (__bridge void*)self, &outputDataPacketSize, &_outCacheBufferList, &packetDesc);
-       // assert(!status);
+        // assert(!status);
         if (status != noErr || status == -1) {
             NSLog(@"AudioConverterFillComplexBuffer error:%d",status);
             return;
@@ -167,10 +139,10 @@ static OSStatus encodeInputDataProc(AudioConverterRef inConverter, UInt32 *ioNum
         NSMutableData * aacStreamData = [[NSMutableData alloc]initWithData:adts];
         [aacStreamData appendBytes:_outCacheBufferList.mBuffers[0].mData length:outDateLenth];
         
-        if ([self.delegate respondsToSelector:@selector(aacEncodeCompleteBuffer:withLenth:)]) {
-            [self.delegate aacEncodeCompleteBuffer:(u_int8_t*)[aacStreamData bytes] withLenth:aacStreamData.length];
+        if ([self.delegate respondsToSelector:@selector(pcmDecodeCompleteData:)]) {
+            [self.delegate pcmDecodeCompleteData:nil];
         }
-
+        
     }
     
 }
