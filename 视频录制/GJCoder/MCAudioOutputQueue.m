@@ -8,9 +8,8 @@
 
 #import "MCAudioOutputQueue.h"
 #import <pthread.h>
-#import <AVFoundation/AVFoundation.h>
 
-const int MCAudioQueueBufferCount = 3;
+const int MCAudioQueueBufferCount = 8;
 
 @interface MCAudioQueueBuffer : NSObject
 @property (nonatomic,assign) AudioQueueBufferRef buffer;
@@ -47,17 +46,6 @@ const int MCAudioQueueBufferCount = 3;
     self = [super init];
     if (self)
     {
-        
-        NSError* error;
-        [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryMultiRoute  error:&error];
-        if (error != nil) {
-            NSLog(@"error:%@",error.localizedDescription);
-        }
-        [[AVAudioSession sharedInstance] setActive:YES error:&error];
-        if (error != nil) {
-            NSLog(@"error:%@",error.localizedDescription);
-        }
-        
         _format = format;
         _volume = 1.0f;
         _bufferSize = bufferSize;
@@ -82,7 +70,6 @@ const int MCAudioQueueBufferCount = 3;
 {
     if (status != noErr && outError != NULL)
     {
-        
         *outError = [NSError errorWithDomain:NSOSStatusErrorDomain code:status userInfo:nil];
     }
 }
@@ -116,20 +103,23 @@ const int MCAudioQueueBufferCount = 3;
 #pragma mark - audio queue
 - (void)_createAudioOutputQueue:(NSData *)magicCookie
 {
+    char *formatName = (char *)&(_format.mFormatID);
+            NSLog(@"format is: %c%c%c%c     -----------", formatName[3], formatName[2], formatName[1], formatName[0]);
+    
     OSStatus status = AudioQueueNewOutput(&_format,MCAudioQueueOutputCallback, (__bridge void *)(self), NULL, NULL, 0, &_audioQueue);
+    assert(!status);
     if (status != noErr)
     {
         _audioQueue = NULL;
-        [self _errorForOSStatus:status error:nil];
         return;
     }
     
     status = AudioQueueAddPropertyListener(_audioQueue, kAudioQueueProperty_IsRunning, MCAudioQueuePropertyCallback, (__bridge void *)(self));
+    assert(!status);
     if (status != noErr)
     {
         AudioQueueDispose(_audioQueue, YES);
         _audioQueue = NULL;
-        [self _errorForOSStatus:status error:nil];
         return;
     }
     
@@ -159,11 +149,7 @@ const int MCAudioQueueBufferCount = 3;
     
     if (magicCookie)
     {
-       OSStatus status = AudioQueueSetProperty(_audioQueue, kAudioQueueProperty_MagicCookie, [magicCookie bytes], (UInt32)[magicCookie length]);
-        if (status != noErr) {
-            [self _errorForOSStatus:status error:nil];
-
-        }
+        AudioQueueSetProperty(_audioQueue, kAudioQueueProperty_MagicCookie, [magicCookie bytes], (UInt32)[magicCookie length]);
     }
     
     [self setVolumeParameter];
@@ -182,6 +168,7 @@ const int MCAudioQueueBufferCount = 3;
 {
     OSStatus status = AudioQueueStart(_audioQueue, NULL);
     _started = status == noErr;
+    assert(!status);
     return _started;
 }
 
@@ -225,32 +212,48 @@ const int MCAudioQueueBufferCount = 3;
     return status == noErr;
 }
 
-- (BOOL)playData:(NSData *)data packetCount:(UInt32)packetCount packetDescriptions:(AudioStreamPacketDescription *)packetDescriptions isEof:(BOOL)isEof
+- (BOOL)playData:(NSData *)data packetCount:(UInt32)packetCount packetDescriptions:(const AudioStreamPacketDescription *)packetDescriptions isEof:(BOOL)isEof
 {
     if ([data length] > _bufferSize)
     {
         return NO;
     }
     
-
-    MCAudioQueueBuffer *bufferObj = [_reusableBuffers firstObject];
-    if (!bufferObj) {
-        NSLog(@"wait....... reuseable:%lu, buffer:%lu",(unsigned long)_reusableBuffers.count,(unsigned long)_buffers.count);
-        [self _mutexWait];
-        bufferObj = [_reusableBuffers firstObject];
-        NSLog(@"after .... wait....... reuseable:%lu, buffer:%lu",(unsigned long)_reusableBuffers.count,(unsigned long)_buffers.count);
-
+    if (_reusableBuffers.count == 0)
+    {
+        if (!_started && ![self _start])
+        {
+            return NO;
+        }
+        
     }
+    
+    MCAudioQueueBuffer *bufferObj = [_reusableBuffers firstObject];
+    while(!bufferObj) {
+        NSLog(@"begin Wait");
+        [self _mutexWait];
+        NSLog(@"after Wait");
+        bufferObj = [_reusableBuffers firstObject];
+    }
+    NSLog(@"enter");
     [_reusableBuffers removeObject:bufferObj];
 
     memcpy(bufferObj.buffer->mAudioData, [data bytes], [data length]);
     bufferObj.buffer->mAudioDataByteSize = (UInt32)[data length];
     
     OSStatus status = AudioQueueEnqueueBuffer(_audioQueue, bufferObj.buffer, packetCount, packetDescriptions);
-    
-   
-    status = [self _start];
-    
+    assert(!status);
+    if (status == noErr)
+    {
+        if (_reusableBuffers.count == 0 || isEof)
+        {
+            if (!_started && ![self _start])
+            {
+                return NO;
+            }
+        }
+    }
+    [self _start];
     return status == noErr;
 }
 
@@ -334,8 +337,10 @@ static void MCAudioQueueOutputCallback(void *inClientData, AudioQueueRef inAQ, A
             break;
         }
     }
-    
+    NSLog(@"begin signal");
     [self _mutexSignal];
+    NSLog(@"after signal");
+
 }
 
 static void MCAudioQueuePropertyCallback(void *inUserData, AudioQueueRef inAQ, AudioQueuePropertyID inID)

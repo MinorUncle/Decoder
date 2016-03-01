@@ -9,9 +9,8 @@
 #import <Foundation/Foundation.h>
 #import <AudioToolbox/AudioQueue.h>
 #import <AudioToolbox/AudioFile.h>
-static const int kNumberBuffers = 3;                            // 1
+static const int kNumberBuffers = 8;                            // 1
 typedef struct _AQRecorderState {
-    AudioStreamBasicDescription  mDataFormat;                   // 2
     AudioQueueRef                mQueue;                        // 3
     AudioQueueBufferRef          mBuffers[kNumberBuffers];      // 4
     AudioFileID                  mAudioFile;                    // 5
@@ -28,12 +27,15 @@ typedef struct _AQRecorderState {
 
 @end
 @interface GJAudioQueueRecoder : NSObject
-@property(nonatomic,assign)AQRecorderState *pAqData;
+@property(nonatomic,assign,readonly)AQRecorderState *pAqData;
+@property(nonatomic,assign)int destMaxOutSize;
+@property(nonatomic,assign,readonly)AudioStreamBasicDescription destFormatDescription;
+
 @property(nonatomic,weak)id<GJAudioQueueRecoderDelegate> delegate;
 
 
 //- (instancetype)initWithPath:(NSString*)path fileType:(AudioFileTypeID)fileType;
-- (instancetype)initWithStreamFormat:(AudioFormatID)formatID;
+- (instancetype)initWithStreamDestFormat:(AudioStreamBasicDescription*)formatID;
 
 -(BOOL)startRecodeAudio;
 -(void)stop;

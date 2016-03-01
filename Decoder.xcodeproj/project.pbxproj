@@ -15,9 +15,8 @@
 		AEF9852C1B959CF4000E6339 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AEF9852B1B959CF4000E6339 /* Images.xcassets */; };
 		AEF9852F1B959CF4000E6339 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = AEF9852D1B959CF4000E6339 /* LaunchScreen.xib */; };
 		AEF9853B1B959CF4000E6339 /* ____Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = AEF9853A1B959CF4000E6339 /* ____Tests.m */; };
-		C500D32D1C7562B700EB4F02 /* MCAudioOutputQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = C500D3231C7562B700EB4F02 /* MCAudioOutputQueue.m */; };
 		C500D3331C75954F00EB4F02 /* MCAudioSession.m in Sources */ = {isa = PBXBuildFile; fileRef = C500D3321C75954F00EB4F02 /* MCAudioSession.m */; };
-		C50DD33F1C7C60ED00A25374 /* GJAudioQueuePlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = C50DD33C1C7C60ED00A25374 /* GJAudioQueuePlayer.m */; };
+		C5097C931C84139E00761302 /* MCAudioOutputQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = C5097C921C84139E00761302 /* MCAudioOutputQueue.m */; };
 		C50DD3401C7C60ED00A25374 /* GJAudioQueueRecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = C50DD33E1C7C60ED00A25374 /* GJAudioQueueRecoder.m */; };
 		C52C11391C72F0DE0061DD83 /* PAudioQueueBufferPool.m in Sources */ = {isa = PBXBuildFile; fileRef = C52C11381C72F0DE0061DD83 /* PAudioQueueBufferPool.m */; };
 		C544223B1C71B09200C66311 /* GJH264Decoder.m in Sources */ = {isa = PBXBuildFile; fileRef = C54422381C71B09200C66311 /* GJH264Decoder.m */; };
@@ -63,12 +62,10 @@
 		AEF985341B959CF4000E6339 /* Decoder.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Decoder.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AEF985391B959CF4000E6339 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AEF9853A1B959CF4000E6339 /* ____Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "____Tests.m"; sourceTree = "<group>"; };
-		C500D3221C7562B700EB4F02 /* MCAudioOutputQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MCAudioOutputQueue.h; sourceTree = "<group>"; };
-		C500D3231C7562B700EB4F02 /* MCAudioOutputQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MCAudioOutputQueue.m; sourceTree = "<group>"; };
 		C500D3311C75954F00EB4F02 /* MCAudioSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MCAudioSession.h; sourceTree = "<group>"; };
 		C500D3321C75954F00EB4F02 /* MCAudioSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MCAudioSession.m; sourceTree = "<group>"; };
-		C50DD33B1C7C60ED00A25374 /* GJAudioQueuePlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GJAudioQueuePlayer.h; sourceTree = "<group>"; };
-		C50DD33C1C7C60ED00A25374 /* GJAudioQueuePlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GJAudioQueuePlayer.m; sourceTree = "<group>"; };
+		C5097C911C84139E00761302 /* MCAudioOutputQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MCAudioOutputQueue.h; sourceTree = "<group>"; };
+		C5097C921C84139E00761302 /* MCAudioOutputQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MCAudioOutputQueue.m; sourceTree = "<group>"; };
 		C50DD33D1C7C60ED00A25374 /* GJAudioQueueRecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GJAudioQueueRecoder.h; sourceTree = "<group>"; };
 		C50DD33E1C7C60ED00A25374 /* GJAudioQueueRecoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GJAudioQueueRecoder.m; sourceTree = "<group>"; };
 		C52C11371C72F0DE0061DD83 /* PAudioQueueBufferPool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PAudioQueueBufferPool.h; sourceTree = "<group>"; };
@@ -198,8 +195,6 @@
 				C5F2B2CA1C76E65900B2AA78 /* MCParsedAudioData.m */,
 				C500D3311C75954F00EB4F02 /* MCAudioSession.h */,
 				C500D3321C75954F00EB4F02 /* MCAudioSession.m */,
-				C500D3221C7562B700EB4F02 /* MCAudioOutputQueue.h */,
-				C500D3231C7562B700EB4F02 /* MCAudioOutputQueue.m */,
 				C5F2B2C61C76E62600B2AA78 /* MCAudioFileStream.h */,
 				C5F2B2C71C76E62600B2AA78 /* MCAudioFileStream.m */,
 			);
@@ -219,8 +214,8 @@
 				C544223A1C71B09200C66311 /* GJH264Encoder.m */,
 				C52C11371C72F0DE0061DD83 /* PAudioQueueBufferPool.h */,
 				C52C11381C72F0DE0061DD83 /* PAudioQueueBufferPool.m */,
-				C50DD33B1C7C60ED00A25374 /* GJAudioQueuePlayer.h */,
-				C50DD33C1C7C60ED00A25374 /* GJAudioQueuePlayer.m */,
+				C5097C911C84139E00761302 /* MCAudioOutputQueue.h */,
+				C5097C921C84139E00761302 /* MCAudioOutputQueue.m */,
 				C50DD33D1C7C60ED00A25374 /* GJAudioQueueRecoder.h */,
 				C50DD33E1C7C60ED00A25374 /* GJAudioQueueRecoder.m */,
 				AE078C781C830540003D9736 /* GJAudioBufferQueue.h */,
@@ -373,11 +368,10 @@
 			files = (
 				AEF985271B959CF4000E6339 /* ViewController.m in Sources */,
 				C5F2B2C81C76E62600B2AA78 /* MCAudioFileStream.m in Sources */,
+				C5097C931C84139E00761302 /* MCAudioOutputQueue.m in Sources */,
 				C52C11391C72F0DE0061DD83 /* PAudioQueueBufferPool.m in Sources */,
 				C50DD3401C7C60ED00A25374 /* GJAudioQueueRecoder.m in Sources */,
 				C56C35931C3F66A800434694 /* PCMDecodeFromAAC.mm in Sources */,
-				C50DD33F1C7C60ED00A25374 /* GJAudioQueuePlayer.m in Sources */,
-				C500D32D1C7562B700EB4F02 /* MCAudioOutputQueue.m in Sources */,
 				C56C35BF1C3FBFD800434694 /* RWPlayer.m in Sources */,
 				AEF985241B959CF4000E6339 /* AppDelegate.m in Sources */,
 				AEF985211B959CF4000E6339 /* main.m in Sources */,
@@ -519,11 +513,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = "视频录制/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.decoder;
+				PRODUCT_BUNDLE_IDENTIFIER = com.decoder.testdtt;
 				PRODUCT_NAME = Decoder;
+				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
@@ -533,11 +529,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = "视频录制/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.decoder;
+				PRODUCT_BUNDLE_IDENTIFIER = com.decoder.testdtt;
 				PRODUCT_NAME = Decoder;
+				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;

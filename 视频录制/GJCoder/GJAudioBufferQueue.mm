@@ -17,7 +17,6 @@ GJAudioBufferQueue::GJAudioBufferQueue(int maxBufferSize){
         buffer[i].mData = malloc(_maxBufferSize);
         buffer[i].mDataByteSize = 0;
         buffer[i].mNumberChannels = 1;
-        
     }
     
 }
@@ -51,7 +50,7 @@ bool GJAudioBufferQueue::queuePop(AudioBuffer** temBuffer){
 }
 bool GJAudioBufferQueue::queuePush(AudioBuffer* temBuffer){
     bool result = true;
-    if ( temBuffer->mDataByteSize > _maxBufferSize) {
+    if ( temBuffer->mDataByteSize >= _maxBufferSize) { //留最后一个外部使用缓冲
         result = false;
     }else{
         pthread_mutex_lock(&_uniqueLock);
@@ -59,20 +58,14 @@ bool GJAudioBufferQueue::queuePush(AudioBuffer* temBuffer){
             pthread_mutex_unlock(&_uniqueLock);
             printf("begin Wait out ----------\n");
             
-            NSLog(@"current thread:%@",[NSThread currentThread]);
-            
             _mutexWait(&_outCond);
             pthread_mutex_lock(&_uniqueLock);
             printf("after Wait out.  incount:%ld  outcount:%ld----------\n",_inPointer,_outPointer);
-            
-            
         }
         long temInPointer = _inPointer;
         _inPointer++;
         _mutexSignal(&_inCond);
         printf("after signal in. incount:%ld  outcount:%ld----------\n",_inPointer,_outPointer);
-        
-        
         pthread_mutex_unlock(&_uniqueLock);
         
         buffer[temInPointer%AUDIOQUEUE_MAX_COUNT].mDataByteSize = temBuffer->mDataByteSize;

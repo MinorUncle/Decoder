@@ -18,12 +18,15 @@
 #import "PCMDecodeFromAAC.h"
 #import "MCAudioFileStream.h"
 #import "AudioEncoder.h"
+#import "GJAudioQueueRecoder.h"
 #import "AACDecoder.h"
 #define fps 10
 typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
 
-@interface ViewController ()<AVCaptureFileOutputRecordingDelegate,AVCaptureVideoDataOutputSampleBufferDelegate,AVCaptureAudioDataOutputSampleBufferDelegate,GJH264DecoderDelegate,GJH264EncoderDelegate,AACEncoderFromPCMDelegate,MCAudioFileStreamDelegate,aacCallbackDelegate,AACDecodeTocPCMCallBack>//视频文件输出代理
+@interface ViewController ()<AVCaptureFileOutputRecordingDelegate,AVCaptureVideoDataOutputSampleBufferDelegate,AVCaptureAudioDataOutputSampleBufferDelegate,GJH264DecoderDelegate,GJH264EncoderDelegate,AACEncoderFromPCMDelegate,MCAudioFileStreamDelegate,aacCallbackDelegate,AACDecodeTocPCMCallBack,PCMDecodeFromAACDelegate,GJAudioQueueRecoderDelegate>//视频文件输出代理
 {
+    MCAudioOutputQueue* _streamQueue;
+
     long frameCount;///每一重计，计算帧率
     long totalCount;////总共多少帧
     long totalSize;////总共传输大小
@@ -36,6 +39,11 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
     PCMDecodeFromAAC* _audioDecoder;
     AudioEncoder* _RWAudioEncoder;
     AACDecoder* _RWAudioDecoder;
+    
+    GJAudioQueueRecoder* _recoder;
+    
+    dispatch_queue_t _playQueue;
+
 
 }
 @property (strong,nonatomic) AVCaptureSession *captureSession;//负责输入和输出设备之间的数据传递
@@ -105,7 +113,6 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
     _audioEncoder = [[AACEncoderFromPCM alloc]init];
     _audioEncoder.delegate = self;
 //    _audioDecoder = [[MCAudioFileStream alloc]initWithFileType:kAudioFileAAC_ADTSType fileSize:0 error:nil];
-    _audioDecoder = [[PCMDecodeFromAAC alloc]init];
 //    _audioDecoder.delegate = self;
     _RWAudioEncoder = [[AudioEncoder alloc]init];
     _RWAudioEncoder.aacCallbackDelegate = self;
@@ -272,39 +279,60 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
 #pragma mark 视频录制
 - (IBAction)takeButtonClick:(UIButton *)sender {
     //根据设备输出获得连接
+//    
+//    if (_isFileStore) {
+//        AVCaptureConnection *captureConnection=[self.captureMovieFileOutput connectionWithMediaType:AVMediaTypeVideo];
+//        NSString *outputFielPath=[NSTemporaryDirectory() stringByAppendingString:@"myMovie.mov"];
+//        NSLog(@"save path is :%@",outputFielPath);
+//        
+//        //根据连接取得设备输出的数据
+//        if (![self.captureMovieFileOutput isRecording]) {
+//            [sender setTitle:@"停止录制" forState:UIControlStateNormal];
+//            //        self.enableRotation=NO;
+//            //如果支持多任务则则开始多任务
+//            if ([[UIDevice currentDevice] isMultitaskingSupported]) {
+//                self.backgroundTaskIdentifier=[[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:nil];
+//            }
+//            //预览图层和视频方向保持一致
+//            captureConnection.videoOrientation=[self.captureVideoPreviewLayer connection].videoOrientation;
+//            [self.captureMovieFileOutput startRecordingToOutputFileURL:[NSURL fileURLWithPath:outputFielPath] recordingDelegate:self];
+//        }
+//        else{
+//            [self.captureMovieFileOutput stopRecording];//停止录制
+//            [sender setTitle:@"开始录制" forState:UIControlStateNormal];
+//        }
+//    }else{
+//        if ([sender.titleLabel.text isEqualToString:@"开始录制"]) {
+////            self.captureDataOutput.videoSettings = @{(id)kCVPixelBufferPixelFormatTypeKey:@(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange)};
+//            [self.captureDataOutput setSampleBufferDelegate:self queue:_videoQueue];
+//            [self.captureAudioOutput setSampleBufferDelegate:self queue:_audioQueue];
+//            [sender setTitle:@"停止录制" forState:UIControlStateNormal];
+//        }else{
+//            [self.captureDataOutput setSampleBufferDelegate:nil queue:NULL];
+//            [sender setTitle:@"开始录制" forState:UIControlStateNormal];
+//        }
+//    }
     
-    if (_isFileStore) {
-        AVCaptureConnection *captureConnection=[self.captureMovieFileOutput connectionWithMediaType:AVMediaTypeVideo];
-        NSString *outputFielPath=[NSTemporaryDirectory() stringByAppendingString:@"myMovie.mov"];
-        NSLog(@"save path is :%@",outputFielPath);
-        
-        //根据连接取得设备输出的数据
-        if (![self.captureMovieFileOutput isRecording]) {
-            [sender setTitle:@"停止录制" forState:UIControlStateNormal];
-            //        self.enableRotation=NO;
-            //如果支持多任务则则开始多任务
-            if ([[UIDevice currentDevice] isMultitaskingSupported]) {
-                self.backgroundTaskIdentifier=[[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:nil];
-            }
-            //预览图层和视频方向保持一致
-            captureConnection.videoOrientation=[self.captureVideoPreviewLayer connection].videoOrientation;
-            [self.captureMovieFileOutput startRecordingToOutputFileURL:[NSURL fileURLWithPath:outputFielPath] recordingDelegate:self];
-        }
-        else{
-            [self.captureMovieFileOutput stopRecording];//停止录制
-            [sender setTitle:@"开始录制" forState:UIControlStateNormal];
-        }
-    }else{
-        if ([sender.titleLabel.text isEqualToString:@"开始录制"]) {
-//            self.captureDataOutput.videoSettings = @{(id)kCVPixelBufferPixelFormatTypeKey:@(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange)};
-            [self.captureDataOutput setSampleBufferDelegate:self queue:_videoQueue];
-            [self.captureAudioOutput setSampleBufferDelegate:self queue:_audioQueue];
-            [sender setTitle:@"停止录制" forState:UIControlStateNormal];
-        }else{
-            [self.captureDataOutput setSampleBufferDelegate:nil queue:NULL];
-            [sender setTitle:@"开始录制" forState:UIControlStateNormal];
-        }
-    }
+    
+    
+    AudioStreamBasicDescription desc;
+//    memset(&desc, 0, sizeof(AudioStreamBasicDescription));
+//    desc.mFormatID = kAudioFormatLinearPCM;
+//    desc.mBitsPerChannel = 16;
+//    desc.mChannelsPerFrame = 1;
+//    desc.mSampleRate = 44100;
+//    desc.mFramesPerPacket = 1;
+//    desc.mFormatFlags = kLinearPCMFormatFlagIsSignedInteger|kLinearPCMFormatFlagIsPacked;
+    
+//    desc.mFormatID         = kAudioFormatMPEG4AAC; // 2
+//    desc.mSampleRate       = 44100;               // 3
+//    desc.mChannelsPerFrame = 2;                     // 4
+//    desc.mFramesPerPacket  = 1024;                     // 7
+    _recoder = [[GJAudioQueueRecoder alloc]initWithStreamDestFormat:nil];
+    _recoder.delegate = self;
+    [_recoder startRecodeAudio];
+    
+    
 }
 
 #pragma mark 切换前后摄像头
@@ -628,11 +656,48 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
     [_playView displayYUV420pData:baseAdd width:(uint32_t)w height:(uint32_t)h];
 //    [openGLLayer displayPixelBuffer:imageBuffer];
 }
--(void)aacEncodeCompleteBuffer:(uint8_t *)buffer withLenth:(long)totalLenth{
-    NSData* data = [NSData dataWithBytes:buffer length:totalLenth];
-        [_RWAudioDecoder canDecodeData:data];
-    NSLog(@"lenth:%ld",totalLenth);
+-(void)AACEncoderFromPCM:(AACEncoderFromPCM *)encoder encodeCompleteBuffer:(uint8_t *)buffer Lenth:(long)totalLenth packetCount:(int)count packets:(AudioStreamPacketDescription *)packets{
+//    NSData* data = [NSData dataWithBytes:buffer length:totalLenth];
+//        [_RWAudioDecoder canDecodeData:data];
+//    NSLog(@"lenth:%ld",totalLenth);
+    if (_audioDecoder == nil) {
+        AudioStreamBasicDescription temDesc = _audioEncoder.destFormatDescription;
+       _audioDecoder = [[PCMDecodeFromAAC alloc]initWithDestDescription:NULL SourceDescription:&(temDesc) sourceMaxBufferLenth:_audioEncoder.destMaxOutSize];
+
+        _audioDecoder.delegate = self;
+    }
+    
+    [_audioDecoder decodeBuffer:buffer withLenth:(int)totalLenth];
+    
+//    if (!_streamQueue) {
+//        _streamQueue = [[MCAudioOutputQueue alloc]initWithFormat:_audioEncoder.destFormatDescription bufferSize:60000 macgicCookie:nil];
+//        _playQueue = dispatch_queue_create("playQueue", DISPATCH_QUEUE_CONCURRENT);
+//    }
+//    
+//    
+//    NSData* ocdata = [NSData dataWithBytes:buffer length:totalLenth];
+//    
+////    dispatch_async(_playQueue, ^{
+////        char *formatName = (char *)&(recoder.pAqData->mDataFormat.mFormatID);
+////        NSLog(@"format is: %c%c%c%c   lenth:%d  -----------", formatName[3], formatName[2], formatName[1], formatName[0],lenth);
+////        
+////        NSLog(@"data:%@",ocdata);
+//        
+//    
+//        [_streamQueue playData:ocdata packetCount:count packetDescriptions:packets isEof:NO];
+////    });
+
 //    [_audioDecoder decodeBuffer:buffer withLenth:(uint32_t)totalLenth];
+}
+
+-(void)pcmDecode:(PCMDecodeFromAAC*)decode completeBuffer:(void *)buffer lenth:(int)lenth{
+    if (_audioOutputQueue == nil) {
+              _audioOutputQueue = [[MCAudioOutputQueue alloc]initWithFormat:decode.destFormatDescription bufferSize:decode.destMaxOutSize macgicCookie:nil];
+    }
+    
+    NSData* data = [NSData dataWithBytes:buffer length:lenth];
+ 
+    [_audioOutputQueue playData:data packetCount:0 packetDescriptions:nil isEof:NO];
 }
 
 -(void)audioFileStream:(MCAudioFileStream *)audioFileStream audioDataParsed:(NSArray *)audioData{
@@ -687,6 +752,18 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
 //    [_RWAudioDecoder canDecodeData:date];
     
 }
+-(void)GJAudioQueueRecoder:(GJAudioQueueRecoder *)recoder streamData:(void *)data lenth:(int)lenth packetCount:(int)packetCount packetDescriptions:(const AudioStreamPacketDescription *)packetDescriptions{
+    if (_audioOutputQueue == nil) {
+       
+        _audioOutputQueue = [[MCAudioOutputQueue alloc]initWithFormat:(_recoder.destFormatDescription) bufferSize:_recoder.pAqData->bufferByteSize macgicCookie:nil];
+    }
+    NSData* playdata = [NSData dataWithBytes:data length:lenth];
+    [_audioOutputQueue playData:playdata packetCount:packetCount packetDescriptions:packetDescriptions isEof:NO];
+
+
+    
+}
+
 -(void)pcmDataToPlay:(char *)buf size:(int)size{
     if (_audioOutputQueue == nil) {
         _audioOutputQueue = [[MCAudioOutputQueue alloc]initWithFormat:_RWAudioDecoder.mTargetAudioStreamDescripion bufferSize:3000 macgicCookie:[_RWAudioDecoder fetchMagicCookie]];

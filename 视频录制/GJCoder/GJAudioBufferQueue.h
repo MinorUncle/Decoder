@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <pthread.h>
 #import <CoreAudio/CoreAudioTypes.h>
-#define MAX_FRAME_SIZE 6000
+#define MAX_FRAME_SIZE 7000
 #define AUDIOQUEUE_MAX_COUNT 10
 
 class GJAudioBufferQueue{

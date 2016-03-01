@@ -34,12 +34,13 @@
  *
  *  @return whether successfully played
  */
-- (BOOL)playData:(NSData *)data packetCount:(UInt32)packetCount packetDescriptions:(AudioStreamPacketDescription *)packetDescriptions isEof:(BOOL)isEof;
+- (BOOL)playData:(NSData *)data packetCount:(UInt32)packetCount packetDescriptions:(const AudioStreamPacketDescription *)packetDescriptions isEof:(BOOL)isEof;
 
 /**
  *  pause & resume
  *
  */
+
 - (BOOL)pause;
 - (BOOL)resume;
 

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "-[PCMDecodeFromAAC _converterStart]:PCMDecodeFromAAC.mm">
+      </ContextState>
+      <ContextState
+         contextName = "handleInputBuffer:GJAudioQueueRecoder.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[MCAudioOutputQueue playData:packetCount:packetDescriptions:isEof:]:MCAudioOutputQueue.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[MCAudioOutputQueue _createAudioOutputQueue:]:MCAudioOutputQueue.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[GJAudioQueueRecoder initDefaultFormat]:GJAudioQueueRecoder.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[GJAudioQueueRecoder _createAudioQueueWithFormat:]:GJAudioQueueRecoder.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[ViewController GJAudioQueueRecoder:streamData:lenth:packetCount:packetDescriptions:]:ViewController.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[MCAudioOutputQueue handleAudioQueueOutputCallBack:buffer:]:MCAudioOutputQueue.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>
