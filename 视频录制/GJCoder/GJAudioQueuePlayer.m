@@ -6,10 +6,10 @@
 //  Copyright (c) 2014年 Chengyin. All rights reserved.
 //
 
-#import "MCAudioOutputQueue.h"
+#import "GJAudioQueuePlayer.h"
 #import <pthread.h>
 
-const int MCAudioQueueBufferCount = 8;
+const int MCAudioQueueBufferCount = 10;
 
 @interface MCAudioQueueBuffer : NSObject
 @property (nonatomic,assign) AudioQueueBufferRef buffer;
@@ -17,7 +17,7 @@ const int MCAudioQueueBufferCount = 8;
 @implementation MCAudioQueueBuffer
 @end
 
-@interface MCAudioOutputQueue ()
+@interface GJAudioQueuePlayer ()
 {
 @private
     AudioQueueRef _audioQueue;
@@ -33,7 +33,7 @@ const int MCAudioQueueBufferCount = 8;
 }
 @end
 
-@implementation MCAudioOutputQueue
+@implementation GJAudioQueuePlayer
 @synthesize format = _format;
 @dynamic available;
 @synthesize volume = _volume;
@@ -153,6 +153,8 @@ const int MCAudioQueueBufferCount = 8;
     }
     
     [self setVolumeParameter];
+    [self _start];
+
 }
 
 - (void)_disposeAudioOutputQueue
@@ -168,7 +170,12 @@ const int MCAudioQueueBufferCount = 8;
 {
     OSStatus status = AudioQueueStart(_audioQueue, NULL);
     _started = status == noErr;
-    assert(!status);
+    if (status != 0) {
+        char* codeChar = (char*)&status;
+        NSLog(@"AudioQueueStartError：%c%c%c%c CODE:%d",codeChar[3],codeChar[2],codeChar[1],codeChar[0],status);
+        NSLog(@"播放失败");
+    }
+//    assert(!status);
     return _started;
 }
 
@@ -212,22 +219,12 @@ const int MCAudioQueueBufferCount = 8;
     return status == noErr;
 }
 
-- (BOOL)playData:(NSData *)data packetCount:(UInt32)packetCount packetDescriptions:(const AudioStreamPacketDescription *)packetDescriptions isEof:(BOOL)isEof
-{
-    if ([data length] > _bufferSize)
+- (BOOL)playData:(const void *)data lenth:(int)lenth packetCount:(UInt32)packetCount packetDescriptions:(const AudioStreamPacketDescription *)packetDescriptions isEof:(BOOL)isEof{
+    if (lenth > _bufferSize)
     {
+    
         return NO;
     }
-    
-    if (_reusableBuffers.count == 0)
-    {
-        if (!_started && ![self _start])
-        {
-            return NO;
-        }
-        
-    }
-    
     MCAudioQueueBuffer *bufferObj = [_reusableBuffers firstObject];
     while(!bufferObj) {
         NSLog(@"begin Wait");
@@ -235,25 +232,27 @@ const int MCAudioQueueBufferCount = 8;
         NSLog(@"after Wait");
         bufferObj = [_reusableBuffers firstObject];
     }
-    NSLog(@"enter");
     [_reusableBuffers removeObject:bufferObj];
 
-    memcpy(bufferObj.buffer->mAudioData, [data bytes], [data length]);
-    bufferObj.buffer->mAudioDataByteSize = (UInt32)[data length];
+    memcpy(bufferObj.buffer->mAudioData, data, lenth);
+    bufferObj.buffer->mAudioDataByteSize = lenth;
     
     OSStatus status = AudioQueueEnqueueBuffer(_audioQueue, bufferObj.buffer, packetCount, packetDescriptions);
     assert(!status);
-    if (status == noErr)
-    {
-        if (_reusableBuffers.count == 0 || isEof)
-        {
-            if (!_started && ![self _start])
-            {
-                return NO;
-            }
-        }
-    }
+    NSLog(@"enter");
+    
+//    if (status == noErr)
+//    {
+//        if (_reusableBuffers.count == 0 || isEof)
+//        {
+//            if (!_started && ![self _start])
+//            {
+//                return NO;
+//            }
+//        }
+//    }
     [self _start];
+
     return status == noErr;
 }
 
@@ -323,12 +322,14 @@ const int MCAudioQueueBufferCount = 8;
 #pragma mark - call back
 static void MCAudioQueueOutputCallback(void *inClientData, AudioQueueRef inAQ, AudioQueueBufferRef inBuffer)
 {
-	MCAudioOutputQueue *audioOutputQueue = (__bridge MCAudioOutputQueue *)inClientData;
+	GJAudioQueuePlayer *audioOutputQueue = (__bridge GJAudioQueuePlayer *)inClientData;
 	[audioOutputQueue handleAudioQueueOutputCallBack:inAQ buffer:inBuffer];
 }
 
 - (void)handleAudioQueueOutputCallBack:(AudioQueueRef)audioQueue buffer:(AudioQueueBufferRef)buffer
 {
+    NSLog(@"begin signal");
+
     for (int i = 0; i < _buffers.count; ++i)
     {
         if (buffer == [_buffers[i] buffer])
@@ -337,7 +338,6 @@ static void MCAudioQueueOutputCallback(void *inClientData, AudioQueueRef inAQ, A
             break;
         }
     }
-    NSLog(@"begin signal");
     [self _mutexSignal];
     NSLog(@"after signal");
 
@@ -345,7 +345,7 @@ static void MCAudioQueueOutputCallback(void *inClientData, AudioQueueRef inAQ, A
 
 static void MCAudioQueuePropertyCallback(void *inUserData, AudioQueueRef inAQ, AudioQueuePropertyID inID)
 {
-	MCAudioOutputQueue *audioQueue = (__bridge MCAudioOutputQueue *)inUserData;
+	GJAudioQueuePlayer *audioQueue = (__bridge GJAudioQueuePlayer *)inUserData;
 	[audioQueue handleAudioQueuePropertyCallBack:inAQ property:inID];
 }
 

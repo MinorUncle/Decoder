@@ -23,6 +23,7 @@
 
         [self _createAudioQueueWithFormat:format];
         _deriveBufferSize(_pAqData->mQueue, _destFormatDescription, 0.02, &_pAqData->bufferByteSize);
+        _destMaxOutSize = _pAqData->bufferByteSize;
         [self _PrepareAudioQueueBuffers];
     }
     return self;
@@ -37,6 +38,8 @@
         [self initDefaultFormat];
         [self _createAudioQueueWithFormat:NULL];
         _deriveBufferSize(_pAqData->mQueue, _destFormatDescription, 0.02, &_pAqData->bufferByteSize);
+        _destMaxOutSize = _pAqData->bufferByteSize;
+
         [self _PrepareAudioQueueBuffers];
 
         [self _createAudioQueueFileWithFilePath:path fileType:fileType];
@@ -76,11 +79,11 @@ static void handleInputBuffer (void *aqData, AudioQueueRef inAQ,AudioQueueBuffer
     pAqData->mCurrentPacket += inNumPackets;                     // 4
     //    }
     
-    if (inPacketDesc == NULL)inNumPackets = 0;
     
     if (!pAqData->mIsRunning)return;
     AudioQueueEnqueueBuffer (pAqData->mQueue,inBuffer,0,NULL);
     if ([tempSelf.delegate respondsToSelector:@selector(GJAudioQueueRecoder:streamData:lenth:packetCount:packetDescriptions:)]) {
+        if (inPacketDesc == NULL)inNumPackets = 0;       
         [tempSelf.delegate GJAudioQueueRecoder:tempSelf streamData:inBuffer->mAudioData lenth:inBuffer->mAudioDataByteSize packetCount:inNumPackets packetDescriptions:inPacketDesc];
     }
 

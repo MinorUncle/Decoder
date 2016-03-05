@@ -200,7 +200,7 @@ static OSStatus encodeInputDataProc(AudioConverterRef inConverter, UInt32 *ioNum
         //    float VALUE = pts.value / pts.timescale;
         //    NSLog(@"pts:%lf  value:%lld CMTimeScale:%d  CMTimeFlags:%d CMTimeEpoch:%lld",VALUE, pts.value,pts.timescale,pts.flags,pts.epoch);
         UInt32 outDateLenth = _outCacheBufferList.mBuffers[0].mDataByteSize;
-//        NSData * adts = [self adtsDataForPacketLength:outDateLenth];
+        NSData * adts = [self adtsDataForPacketLength:outDateLenth];
         NSMutableData * aacStreamData = [[NSMutableData alloc]init];
         [aacStreamData appendBytes:_outCacheBufferList.mBuffers[0].mData length:outDateLenth];
         

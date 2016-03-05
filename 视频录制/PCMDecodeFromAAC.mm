@@ -60,7 +60,7 @@
         [self initDefaultSourceFormateDescription];
       
         
-        _resumeQueue = new GJAudioBufferQueue(MAX_FRAME_SIZE);
+        _resumeQueue = new GJAudioBufferQueue(_outputDataPacketCount * _destFormatDescription.mBytesPerPacket);
     }
     return self;
 }
@@ -132,8 +132,8 @@ static OSStatus encodeInputDataProc(AudioConverterRef inConverter, UInt32 *ioNum
         
         _outCacheBufferList->mNumberBuffers = 1;
         _outCacheBufferList->mBuffers[0].mNumberChannels = 1;
-        _outCacheBufferList->mBuffers[0].mData = (void*)malloc(MAX_FRAME_SIZE);
-        _outCacheBufferList->mBuffers[0].mDataByteSize = MAX_FRAME_SIZE;
+        _outCacheBufferList->mBuffers[0].mData = (void*)malloc(_outputDataPacketCount * _destFormatDescription.mBytesPerPacket);
+        _outCacheBufferList->mBuffers[0].mDataByteSize = _outputDataPacketCount * _destFormatDescription.mBytesPerPacket;
     }
     return _outCacheBufferList;
 }
@@ -173,7 +173,7 @@ static OSStatus encodeInputDataProc(AudioConverterRef inConverter, UInt32 *ioNum
     AudioStreamPacketDescription packetDesc;
     while (_isRunning) {
         memset(&packetDesc, 0, sizeof(packetDesc));
-        self.outCacheBufferList->mBuffers[0].mDataByteSize = MAX_FRAME_SIZE;
+        self.outCacheBufferList->mBuffers[0].mDataByteSize = _outputDataPacketCount * _destFormatDescription.mBytesPerPacket;
         OSStatus status = AudioConverterFillComplexBuffer(_decodeConvert, encodeInputDataProc, (__bridge void*)self, &_outputDataPacketCount, self.outCacheBufferList, &packetDesc);
         // assert(!status);
         if (status != noErr || status == -1) {
